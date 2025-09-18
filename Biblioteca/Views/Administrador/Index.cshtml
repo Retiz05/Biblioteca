@@ -1,0 +1,444 @@
+﻿@using Biblioteca.Models;
+@{
+    ViewBag.Title = "Panel de Administrador";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Panel de Control</h1>
+            <p class="dashboard-subtitle">Resumen general del sistema</p>
+        </div>
+        <div class="dashboard-actions">
+            <a href="#" class="btn btn-primary" onclick="openForm('formModal')">Crear Biblioteca</a>
+            <a href="#" class="btn btn-primary" onclick="openForm('clienteModal')">Crear Cliente</a>
+        </div>
+    </header>
+
+    <section class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-icon neutral-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21V7a2 2 0 0 1 2-2h3v16H5a2 2 0 0 1-2-2z" />
+                    <path d="M14 21V3h5a2 2 0 0 1 2 2v16h-7z" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.TotalBibliotecas</h3>
+                <p>Total Bibliotecas</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon neutral-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M4 21v-2a4 4 0 0 1 3-3.87" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.TotalClientes</h3>
+                <p>Total Clientes</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon neutral-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.TotalLibros</h3>
+                <p>Total Libros</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal de Crear Biblioteca -->
+<div class="modal-overlay" id="formModal">
+    <div class="modal-form">
+        <button class="close-btn" onclick="closeForm('formModal')">✖</button>
+        <h2>Crear Biblioteca</h2>
+        <form method="post" action="/Bibliotecas/Create">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="Nombre">Nombre de la Biblioteca</label>
+                <input type="text" id="Nombre" name="Nombre" required />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="closeForm('formModal')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Crear Cliente -->
+<div class="modal-overlay" id="clienteModal">
+    <div class="modal-form">
+        <button class="close-btn" onclick="closeForm('clienteModal')">✖</button>
+        <h2>Crear Cliente</h2>
+        <form method="post" action="/Clientes/Create">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="NombreCliente">Nombre</label>
+                <input type="text" id="NombreCliente" name="Nombre" required />
+            </div>
+            <div class="form-group">
+                <label for="Correo">Correo Electrónico</label>
+                <input type="email" id="Correo" name="Correo" required />
+            </div>
+            <div class="form-group">
+                <label for="Contraseña">Contraseña</label>
+                <input type="password" id="Contraseña" name="Contraseña" required />
+            </div>
+            <div class="form-group">
+                <label for="RolID">Rol</label>
+                <select id="RolID" name="RolID" class="form-control" required>
+                    <option value="">Seleccione un rol</option>
+                    @foreach (var rol in ViewBag.Roles as List<RolCliente>)
+                    {
+                        <option value="@rol.ID">@rol.Nombre</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="BibliotecaID">Biblioteca</label>
+                <select id="BibliotecaID" name="BibliotecaID" class="form-control" required>
+                    <option value="">Seleccione una biblioteca</option>
+                    @foreach (var biblioteca in ViewBag.Bibliotecas as List<Biblioteca>)
+                    {
+                        <option value="@biblioteca.ID">@biblioteca.Nombre</option>
+                    }
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <button type="button" class="btn btn-secondary" onclick="closeForm('clienteModal')">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .dashboard-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        box-sizing: border-box;
+    }
+
+    .dashboard-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        gap: 15px;
+    }
+
+    .dashboard-title {
+        font-size: 2.2rem;
+        margin: 0;
+        font-weight: 700;
+        color: #2f3e4d;
+    }
+
+    .dashboard-subtitle {
+        color: #6c757d;
+        margin-top: 6px;
+        font-size: 1rem;
+    }
+
+    .dashboard-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .btn {
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        background-color: #1e90ff;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #0d75d8;
+        }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+
+    .dashboard-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 25px;
+        justify-content: flex-start;
+    }
+
+    .stat-card {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 14px;
+        padding: 25px 10px;
+        flex: 1 1 280px;
+        max-width: 320px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: transform 0.2s ease;
+        cursor: default;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+    .stat-icon {
+        background-color: #2f3e4d;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .neutral-icon svg {
+        stroke: white;
+    }
+
+    .stat-info h3 {
+        margin: 0;
+        font-size: 2.6rem;
+        color: #2f3e4d;
+        font-weight: 700;
+    }
+
+    .stat-info p {
+        margin: 4px 0 0;
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+    .modal-form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        position: relative;
+        animation: fadeIn 0.3s ease;
+    }
+
+        .modal-form h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: #2f3e4d;
+            margin-bottom: 20px;
+        }
+
+    .form-group {
+        margin-bottom: 1.75rem; /* 28px */
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem; /* 8px */
+        font-weight: 500;
+        color: #2d3748;
+        font-size: 0.925rem;
+        line-height: 1.5;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem; /* 12px 16px */
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem; /* 8px */
+        font-size: 1rem;
+        background-color: #f8fafc;
+        transition: all 0.2s ease;
+        line-height: 1.5;
+    }
+
+    .form-group input + .hint-text,
+    .form-group select + .hint-text {
+        margin-top: 0.375rem; /* 6px */
+    }
+
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        background-color: #fff;
+    }
+
+    .form-group select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1rem;
+        padding-right: 2.5rem;
+    }
+
+    .form-group .error-message {
+        display: block;
+        margin-top: 0.375rem; 
+        color: #e53e3e;
+        font-size: 0.8125rem; 
+        line-height: 1.4;
+    }
+
+
+    .form-group.row {
+        display: flex;
+        gap: 1rem; 
+        align-items: flex-end;
+    }
+
+        .form-group.row > * {
+            flex: 1;
+            margin-bottom: 0;
+        }
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #333;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        background: transparent;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #999;
+    }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.96);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .dashboard-actions {
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .dashboard-stats {
+            flex-direction: column;
+        }
+
+        .stat-card {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+</style>
+
+<script>
+    function openForm(form) {
+        document.getElementById(form).style.display = "flex";
+    }
+
+    function closeForm(form) {
+        document.getElementById(form).style.display = "none";
+    }
+    document.getElementById("formModal").addEventListener("click", function (e) {
+        if (e.target === this) {
+            closeForm('formModal');
+        }
+    });
+
+</script>

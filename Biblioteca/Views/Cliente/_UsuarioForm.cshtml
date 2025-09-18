@@ -1,0 +1,31 @@
+﻿@model Biblioteca.Models.Usuario
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "usuarioForm", action = @Url.Action(Model.ID == 0 ? "CrearUsuario" : "EditarUsuario", "Cliente") }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ID)
+    <div class="form-group">
+        @Html.LabelFor(m => m.Nombre, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", required = "required", minlength = "2" })
+        @Html.ValidationMessageFor(m => m.Nombre, "", new { @class = "error-message" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Correo, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", type = "email", required = "required" })
+        @Html.ValidationMessageFor(m => m.Correo, "", new { @class = "error-message" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Contrasena, new { @class = "form-label" })
+        @Html.PasswordFor(m => m.Contrasena, new { @class = "form-control", required = "required", minlength = "6", @data_required_if_new = "true" })
+        @Html.ValidationMessageFor(m => m.Contrasena, "", new { @class = "error-message" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.RolID, "Rol", new { @class = "form-label" })
+        @Html.DropDownListFor(m => m.RolID, (SelectList)ViewBag.Roles, "Seleccione un rol", new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.RolID, "", new { @class = "error-message" })
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="@Url.Action("Usuarios", "Cliente")" class="btn btn-secondary">Cancelar</a>
+    </div>
+}

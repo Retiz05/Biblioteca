@@ -1,0 +1,96 @@
+﻿﻿﻿@model Biblioteca.Models.ModelosDTO.LoginDTO
+
+@{
+    ViewBag.Title = "Iniciar Sesión";
+}
+
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card p-4">
+                    <div class="text-center mb-4">
+                        <div class="login-icon mb-2">📚</div>
+                        <h3 class="fw-bold">Iniciar Sesión</h3>
+                    </div>
+
+                    @if (!String.IsNullOrEmpty(ViewBag.ErrorMessage as string))
+                    {
+                        <div class="alert alert-danger text-center" role="alert">
+                            @ViewBag.ErrorMessage
+                        </div>
+                    }
+
+
+                    <form method="post" action="/Login/Index" class="needs-validation">
+                        @Html.AntiForgeryToken()
+                         
+
+                        <div class="mb-3">
+                            <label asp-for="Correo" class="form-label">Correo Electrónico</label>
+                            <input id="Correo" name="Correo" asp-for="Correo" class="form-control" type="email" placeholder="correo@ejemplo.com" required />
+                            <span asp-validation-for="Correo" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Contrasena" class="form-label">Contraseña</label>
+                            <input id="Contrasena" name="Contrasena" asp-for="Contrasena" class="form-control" type="password" placeholder="Tu contraseña" required />
+                            <span asp-validation-for="Contrasena" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesión
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #4e73df, #1cc88a);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .login-icon {
+        font-size: 3rem;
+        color: #4e73df;
+    }
+
+    .btn-primary {
+        background-color: #4e73df;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #2e59d9;
+        }
+</style>

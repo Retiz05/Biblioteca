@@ -1,0 +1,358 @@
+﻿@using Newtonsoft.Json
+@using Biblioteca.Models.ModelosDTO;
+
+@model IEnumerable<Biblioteca.Models.Libro>
+
+@{
+    ViewBag.Title = "Lista de Libros";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    var showModal = TempData["ShowModal"] as string;
+    var modalTitle = TempData["ModalTitle"] as string;
+    var alertMessage = TempData["AlertMessage"] as string;
+    var alertType = TempData["AlertType"] as string;
+    var bookModel = TempData["BookModel"] as Biblioteca.Models.Libro;
+
+    // 🔹 Deserializamos el DTO desde JSON
+    Biblioteca.Models.ModelosDTO.LibroInformacionDTO apiData = null;
+    if (TempData["ApiDataJson"] != null)
+    {
+        apiData = JsonConvert.DeserializeObject<Biblioteca.Models.ModelosDTO.LibroInformacionDTO>((string)TempData["ApiDataJson"]);
+    }
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .table-container {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-available {
+        color: #28a745;
+    }
+
+    .status-lent {
+        color: #dc3545;
+    }
+
+    .btn-custom {
+        margin-right: 5px;
+    }
+</style>
+
+<div class="container-fluid">
+    <h2 class="mb-4">Lista de Libros</h2>
+    @if (TempData["InsertedPreview"] != null)
+    {
+        <div class="alert alert-info">
+            <strong>Debug:</strong>
+            <pre>@TempData["InsertedPreview"]</pre>
+        </div>
+    }
+
+    <div class="table-container">
+        <div class="d-flex justify-content-between mb-3">
+            <p class="mb-0">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#libroModal">
+                    <i class="fas fa-book-medical"></i> Agregar Libro
+                </button>
+            </p>
+            <div>
+                <span class="badge bg-info me-2">Total Libros: @ViewBag.TotalLibros</span>
+                <span class="badge bg-success me-2">Disponibles: @ViewBag.LibrosDisponibles</span>
+                <span class="badge bg-danger">Prestados: @ViewBag.LibrosPrestados</span>
+            </div>
+        </div>
+
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ISBN</th>
+                    <th>Materia</th>
+                    <th>Ejemplar</th>
+                    <th>Categoría</th>
+                    <th>Autor(es)</th>
+                    <th>Estatus</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var libro in Model)
+                    {
+                        <tr>
+                            <td>@libro.ISBN</td>
+                            <td>@libro.Materia</td>
+                            <td>@libro.NumeroEjemplar</td>
+                            <td>@(libro.Categoria != null ? libro.Categoria.Nombre : "Sin categoría")</td>
+                            <td>@(string.IsNullOrEmpty(libro.Autor) ? "Desconocido" : libro.Autor)</td>
+                            <td class="@(libro.Estatus ? "status-available" : "status-lent")">
+                                @(libro.Estatus ? "Disponible" : "Prestado")
+                            </td>
+                            <td>
+                                <a href="@Url.Action("EditBook", "Cliente", new { id = libro.ID })" class="btn btn-warning btn-sm btn-custom">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a href="@Url.Action("DeleteBook", "Cliente", new { id = libro.ID })" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('¿Eliminar este libro?');">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </a>
+                                @if (libro.Estatus)
+                                {
+                                    <a href="@Url.Action("LendBook", "Cliente", new { id = libro.ID })" class="btn btn-success btn-sm btn-custom">
+                                        <i class="fas fa-handshake"></i> Prestar
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("ReturnBook", "Cliente", new { id = libro.ID })" class="btn btn-info btn-sm btn-custom">
+                                        <i class="fas fa-undo"></i> Devolver
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">No hay libros disponibles.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Crear/Agregar Libro -->
+    <div class="modal fade" id="libroModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                @using (Html.BeginForm("CreateBook", "Cliente", FormMethod.Post, new { id = "libroForm", @class = "needs-validation", novalidate = "" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title">@ViewBag.ModalTitle Agregar Libro</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row g-3">
+
+                            <!-- ISBN + Buscar -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    @Html.Label("ISBN")
+                                    <div class="input-group">
+                                        <input type="text" id="ISBN" name="ISBN" class="form-control" placeholder="Ej: 9780451524935" required
+                                               value="@(bookModel?.ISBN ?? "")" />
+                                        <button class="btn btn-info" type="button" id="buscarApiBtn">Buscar en API</button>
+                                    </div>
+                                    <small class="text-muted">Ingrese el ISBN y presione Buscar para llenar datos automáticamente.</small>
+                                </div>
+                            </div>
+
+                            <!-- Datos desde API -->
+                            @if (apiData != null)
+                            {
+                                <div id="apiDataSection">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>Título</label>
+                                            <input type="text" class="form-control" value="@apiData.Titulo" readonly />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 text-center">
+                                        <img src="@apiData.Imagen" alt="Portada" class="img-fluid rounded shadow" style="max-height: 250px;" />
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>Autores</label>
+                                            <input type="text" class="form-control"
+                                                   value="@((apiData.NombresAutor != null && apiData.NombresAutor.Any())
+                               ? string.Join(", ", apiData.NombresAutor)
+                               : "Desconocido")" readonly />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>Materia</label>
+                                            <input type="text" id="Materia" name="Materia" class="form-control"
+                                                   value="@(bookModel?.Materia ?? apiData?.Subtitulo ?? apiData?.Titulo ?? "")" required />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Categoría -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    @Html.Label("Categoría")
+                                    @Html.DropDownList("CategoriaID", (SelectList)ViewBag.Categorias, "Seleccione una categoría", new { @class = "form-control", required = "required", @onchange = "actualizarClasificacion()" })
+                                    @Html.ValidationMessage("CategoriaID", "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>Tema</label>
+                                    @Html.DropDownList("TemaID", (SelectList)ViewBag.Temas, "Seleccione un tema", new { @class = "form-control", id = "TemaID", required = "required", @onchange = "actualizarClasificacion()" })
+                                </div>
+                            </div>
+
+                            <!-- Año (solo para mostrar, no se guarda) -->
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="Anio">Año</label>
+                                    <input type="number" id="Anio" name="Anio" class="form-control" readonly
+                                           value="@{
+                   var apiDataStr = ViewData["ApiData"] as string;
+                   if (apiDataStr != null)
+                   {
+                       try
+                       {
+                           var bookData = JsonConvert.DeserializeObject<LibroInformacionDTO>(apiDataStr); // Renombrado a bookData
+                           @(bookData?.AnioPrimeraPublicacion ?? DateTime.Now.Year)
+                       }
+                       catch
+                       {
+                           @DateTime.Now.Year
+                       }
+                   }
+                   else
+                   {
+                       @DateTime.Now.Year
+                   }
+               }"
+                                           min="1900" max="@DateTime.Now.Year" />
+                                </div>
+                            </div>
+
+                            <!-- Cantidad de ejemplares -->
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="Cantidad">Cantidad de Ejemplares</label>
+                                    <input type="number" id="Cantidad" name="CantidadEjemplares" class="form-control" value="1" min="1" required oninput="actualizarClasificacion()" />
+                                    <small class="text-muted">Si agregas más de 1, se crearán ejemplares secuenciales.</small>
+                                </div>
+                            </div>
+
+                            <!-- Número de Adquisición -->
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="NumeroAdquisicion">Número de Adquisición</label>
+                                    <input type="number" id="NumeroAdquisicion" name="NumeroAdquisicion" class="form-control" min="1" required />
+                                    <small class="text-muted">Número único para identificar la adquisición del libro.</small>
+                                </div>
+                            </div>
+
+                            <!-- Clasificación -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>Clasificación</label>
+                                    <input type="text" id="Clasificacion" name="Clasificacion" class="form-control" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Buscar en API
+        document.getElementById("buscarApiBtn").addEventListener("click", function (e) {
+            e.preventDefault();
+            var isbn = document.getElementById("ISBN").value;
+            if (!isbn) { alert("Ingrese un ISBN válido"); return; }
+            window.location.href = '@Url.Action("SearchApi", "Cliente")' + '?ISBN=' + encodeURIComponent(isbn);
+        });
+
+        function actualizarClasificacion() {
+            var categoria = document.getElementById("CategoriaID")?.options[document.getElementById("CategoriaID").selectedIndex]?.text || "";
+            var tema = document.getElementById("TemaID")?.options[document.getElementById("TemaID").selectedIndex]?.text || "";
+            var anio = document.getElementById("Anio")?.value || "@DateTime.Now.Year";
+            var cantidad = parseInt(document.getElementById("Cantidad")?.value || "1");
+
+            var clasificacion = categoria + " - " + tema + " - " + anio;
+            if (cantidad === 1) {
+                clasificacion += " - Ejemplar único";
+            } else {
+                clasificacion += " - Ejemplares del 1 - " + cantidad;
+            }
+
+            document.getElementById("Clasificacion").value = clasificacion.trim();
+        }
+
+        document.getElementById("CategoriaID")?.addEventListener("change", function () {
+            var categoriaId = this.value;
+            if (!categoriaId) {
+                var temaSelect = document.getElementById("TemaID");
+                temaSelect.innerHTML = '<option value="">Seleccione un tema</option>';
+                actualizarClasificacion();
+                return;
+            }
+            fetch('@Url.Action("GetTemasByCategoria","Cliente")?categoriaId=' + encodeURIComponent(categoriaId))
+                .then(response => response.json())
+                .then(data => {
+                    var temaSelect = document.getElementById("TemaID");
+                    temaSelect.innerHTML = '';
+                    temaSelect.appendChild(new Option("Seleccione un tema", ""));
+                    data.forEach(function (t) {
+                        temaSelect.appendChild(new Option(t.Nombre, t.ID));
+                    });
+                    actualizarClasificacion();
+                })
+                .catch(err => {
+                    console.error("Error cargando temas:", err);
+                });
+        });
+
+        document.getElementById("CategoriaID")?.addEventListener("change", actualizarClasificacion);
+        document.getElementById("TemaID")?.addEventListener("change", actualizarClasificacion);
+        document.getElementById("Cantidad")?.addEventListener("input", actualizarClasificacion);
+
+        // Reabrir modal después de SearchApi
+        @if (showModal == "true")
+        {
+            <text>
+                var modal = new bootstrap.Modal(document.getElementById('libroModal'));
+                modal.show();
+                actualizarClasificacion();
+            </text>
+        }
+
+        // SweetAlert
+        @if (!string.IsNullOrEmpty(alertMessage))
+        {
+            <text>
+                Swal.fire({
+                    icon: '@alertType',
+                    title: '@(alertType == "success" ? "Éxito" : "Error")',
+                    text: '@alertMessage',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            </text>
+        }
+    </script>
+}

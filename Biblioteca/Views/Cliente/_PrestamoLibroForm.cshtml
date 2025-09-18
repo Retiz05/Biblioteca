@@ -1,0 +1,22 @@
+﻿@model Biblioteca.Models.PrestamoLibro
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "lendForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.ID)
+    @Html.HiddenFor(m => m.BibliotecaLibroID)
+    <div class="form-group">
+        @Html.LabelFor(m => m.UsuarioPrestamoID, "Usuario")
+        @Html.DropDownListFor(m => m.UsuarioPrestamoID, new SelectList(ViewBag.Usuarios, "ID", "Nombre"), "Seleccione un usuario", new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.UsuarioPrestamoID, "", new { @class = "error-message" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.TipoPrestamoID, "Tipo de Préstamo")
+        @Html.DropDownListFor(m => m.TipoPrestamoID, new SelectList(ViewBag.TipoPrestamos, "ID", "Nombre"), "Seleccione un tipo", new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.TipoPrestamoID, "", new { @class = "error-message" })
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Prestar</button>
+        <a href="@Url.Action("Libros", "Cliente")" class="btn btn-secondary">Cancelar</a>
+    </div>
+}

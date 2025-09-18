@@ -1,0 +1,251 @@
+﻿@model Biblioteca.Models.ModelosDTO.ClienteDashboardViewModel
+
+@{
+    ViewBag.Title = "Panel de Cliente";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Panel de Control</h1>
+            @*<p class="dashboard-subtitle">resumen general del sistema para cliente</p>*@
+        </div>
+        <div class="dashboard-actions">
+            <a href="@Url.Action("Usuarios", "Cliente")" class="btn btn-primary">Registrar Usuario</a>
+        </div>
+    </header>
+
+    <section class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-icon neutral-icon">
+                <!-- ícono libros totales -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 19l9 2-9-18-9 18 9-2z" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <h3>@Model.TotalLibros</h3>
+                <p>Total de Libros</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon neutral-icon">
+                <!-- ícono libros prestados -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <h3>@Model.LibrosPrestados</h3>
+                <p>Libros Prestados</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon neutral-icon">
+                <!-- ícono libros disponibles -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6v6l4 2" />
+                </svg>
+            </div>
+            <div class="stat-info">
+                <h3>@Model.LibrosDisponibles</h3>
+                <p>Libros Disponibles</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-list">
+        <h2>Estado de los libros</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ISBN</th>
+                    <th>Materia</th>
+                    <th>Ejemplares</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.LibrosEstado != null && Model.LibrosEstado.Any())
+                {
+                    foreach (var libro in Model.LibrosEstado)
+                    {
+                        <tr>
+                            <td>@(libro.ISBN ?? "N/A")</td>
+                            <td>@(libro.Materia ?? "N/A")</td>
+                            <td>@libro.NumeroEjemplar</td>
+                            <td>
+                                @if (libro.Estatus)
+                                {
+                                    <span class="status-available">Disponible</span>
+                                }
+                                else
+                                {
+                                    <span class="status-borrowed">Prestado</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="4">No hay libros registrados.</td></tr>
+                }
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<style>
+    /* Reutilizando y adaptando estilos del ejemplo anterior */
+    .dashboard-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        box-sizing: border-box;
+    }
+
+    .dashboard-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        gap: 15px;
+    }
+
+    .dashboard-title {
+        font-size: 2.2rem;
+        margin: 0;
+        font-weight: 700;
+        color: #2f3e4d;
+    }
+
+    .dashboard-subtitle {
+        color: #6c757d;
+        margin-top: 6px;
+        font-size: 1rem;
+    }
+
+    .dashboard-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .btn {
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        color: white;
+        background-color: #1e90ff;
+    }
+
+        .btn:hover {
+            background-color: #0d75d8;
+        }
+
+    .dashboard-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 25px;
+        justify-content: flex-start;
+    }
+
+    .stat-card {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 14px;
+        padding: 25px 10px;
+        flex: 1 1 280px;
+        max-width: 320px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: transform 0.2s ease;
+        cursor: default;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+    .stat-icon {
+        background-color: #2f3e4d;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .neutral-icon svg {
+        stroke: white;
+    }
+
+    .stat-info h3 {
+        margin: 0;
+        font-size: 2.6rem;
+        color: #2f3e4d;
+        font-weight: 700;
+    }
+
+    .stat-info p {
+        margin: 4px 0 0;
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .dashboard-list {
+        margin-top: 50px;
+        background: white;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+        .dashboard-list h2 {
+            margin-top: 0;
+            color: #2f3e4d;
+            margin-bottom: 20px;
+        }
+
+    table.table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        table.table th, table.table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+    .status-available {
+        color: green;
+        font-weight: 600;
+    }
+
+    .status-borrowed {
+        color: red;
+        font-weight: 600;
+    }
+</style>

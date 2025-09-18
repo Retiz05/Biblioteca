@@ -1,0 +1,142 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f7fa;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100%;
+        background-color: #2f3e4d;
+        color: white;
+        padding-top: 60px;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        overflow-y: auto;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .sidebar.collapsed {
+            transform: translateX(-240px);
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+
+            .sidebar a:hover {
+                background-color: #405768;
+            }
+
+    #toggleBtn {
+        position: fixed;
+        top: 10px;
+        left: 0;
+        width: 60px;
+        height: 45px;
+        background-color: #22303c;
+        border: none;
+        color: white;
+        font-size: 22px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s ease;
+        z-index: 1101;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+        #toggleBtn:hover {
+            background-color: #34495e;
+        }
+
+    .main {
+        margin-left: 240px;
+        padding: 30px;
+        transition: margin-left 0.3s ease;
+        min-height: 100vh;
+        background-color: white;
+    }
+
+        .main.expanded {
+            margin-left: 0;
+        }
+
+    @@media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-240px);
+        }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+        #toggleBtn {
+            left: 10px;
+            width: 40px;
+            height: 40px;
+            font-size: 26px;
+            background-color: #2f3e4d;
+        }
+
+        .main {
+            margin-left: 0;
+            padding: 15px;
+        }
+    }
+</style>
+
+<div id="sidebar" class="sidebar">
+    <a href="@Url.Action("Index", "Cliente")">🏠 Inicio</a>
+    <a href="@Url.Action("Usuarios", "Cliente")">👥 Usuarios</a>
+    <a href="@Url.Action("Libros", "Cliente")">📚 Libros</a>
+    <a href="/Login">🚪 Cerrar Sesión</a>
+</div>
+
+<button id="toggleBtn" aria-label="Toggle Menu">&#9776;</button>
+
+<div id="mainContent" class="main">
+    @RenderBody()
+    @RenderSection("scripts", required: false)
+
+</div>
+
+<script>
+    const toggleBtn = document.getElementById('toggleBtn');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+
+    toggleBtn.addEventListener('click', () => {
+        if (window.innerWidth > 768) {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        } else {
+            sidebar.classList.toggle('show');
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('show');
+        } else {
+            sidebar.classList.remove('collapsed');
+            mainContent.classList.remove('expanded');
+        }
+    });
+</script>
