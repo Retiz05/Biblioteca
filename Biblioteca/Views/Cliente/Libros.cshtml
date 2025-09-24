@@ -14,8 +14,8 @@
     var alertType = TempData["AlertType"] as string;
     var bookModel = TempData["BookModel"] as Libro;
 
-    // 🔹 Deserializamos el DTO desde JSON
-    LibroInformacionDTO apiData = null; // Declare at the top
+    // Deserializamos el DTO desde JSON
+    LibroInformacionDTO apiData = null;
     if (TempData["ApiDataJson"] != null)
     {
         apiData = JsonConvert.DeserializeObject<LibroInformacionDTO>((string)TempData["ApiDataJson"]);
@@ -175,21 +175,23 @@
                                             <input type="text" class="form-control" value="@apiData.Titulo" readonly />
                                         </div>
                                     </div>
-
                                     <div class="col-12 text-center">
-                                        <img src="@apiData.Imagen" alt="Portada" class="img-fluid rounded shadow" style="max-height: 250px;" />
+                                        <img src="@(string.IsNullOrEmpty(apiData.Imagen) ? "/Content/images/default-book-cover.jpg" : apiData.Imagen)"
+                                             alt="Portada" class="img-fluid rounded shadow" style="max-height: 250px;" />
                                     </div>
-
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label>Autores</label>
                                             <input type="text" class="form-control"
                                                    value="@((apiData.NombresAutor != null && apiData.NombresAutor.Any())
-                               ? string.Join(", ", apiData.NombresAutor)
-                               : "Desconocido")" readonly />
+                           ? string.Join(", ", apiData.NombresAutor)
+                           : "Desconocido")" readonly />
+                                            <input type="hidden" name="Autor"
+                                                   value="@((apiData.NombresAutor != null && apiData.NombresAutor.Any())
+                           ? string.Join(", ", apiData.NombresAutor)
+                           : "Desconocido")" />
                                         </div>
                                     </div>
-
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label>Materia</label>
@@ -308,7 +310,7 @@
 
         function updateNumeroAdquisicion() {
             var cantidad = parseInt(document.getElementById("Cantidad").value) || 1;
-            var lastNumeroAdquisicion = @(((int?)ViewBag.LastNumeroAdquisicion).Value); // Asegúrate de manejar null
+            var lastNumeroAdquisicion = @(((int?)ViewBag.LastNumeroAdquisicion).Value);
             var baseNumero = lastNumeroAdquisicion + 1;
             document.getElementById("NumeroAdquisicion").value = baseNumero;
         }

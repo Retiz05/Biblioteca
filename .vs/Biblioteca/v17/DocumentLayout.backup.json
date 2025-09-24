@@ -3,20 +3,44 @@
   "WorkspaceRootPath": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|c:\\users\\equipo-13\\documents\\biblioteca 2\\biblioteca\\views\\cliente\\libros.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\views\\cliente\\libros.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\controllers\\cliente\\clientecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\controllers\\cliente\\clientecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\services\\openlibraryapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\services\\openlibraryapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\views\\login\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\views\\login\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|c:\\users\\equipo-13\\documents\\biblioteca 2\\biblioteca\\views\\cliente\\libros.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\views\\cliente\\libros.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|c:\\users\\equipo-13\\documents\\biblioteca 2\\biblioteca\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|c:\\users\\equipo-13\\documents\\biblioteca 2\\biblioteca\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\views\\cliente\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\views\\cliente\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\models\\modelosdto\\librodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\models\\modelosdto\\librodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\models\\libro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\models\\libro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\models\\modelosdto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\models\\modelosdto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\services\\openlibraryapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\services\\openlibraryapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\migrations\\202509240043532_campoestatusbibliotecalibro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -31,16 +55,8 @@
       "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\models\\biblioteca.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\models\\libro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\models\\libro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\models\\prestamolibro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\models\\prestamolibro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\views\\login\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\views\\login\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\views\\cliente\\gestionprestamos.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -49,10 +65,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\views\\shared\\_layoutcliente.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\views\\shared\\_layoutcliente.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\views\\cliente\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\views\\cliente\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\views\\shared\\error.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -121,10 +133,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\services\\autenticacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\services\\autenticacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\models\\modelosdto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|solutionrelative:biblioteca\\models\\modelosdto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0E472FDE-D43C-47FD-BD87-4EA61F8919FE}|Biblioteca\\Biblioteca.csproj|C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\biblioteca\\migrations\\202509230035483_quitarmodelo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -202,7 +210,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 51,
+          "SelectedChildIndex": 58,
           "Children": [
             {
               "$type": "Bookmark",
@@ -238,7 +246,33 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Web.config",
+              "RelativeDocumentMoniker": "Biblioteca\\Views\\Web.config",
+              "ToolTip": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Web.config",
+              "RelativeToolTip": "Biblioteca\\Views\\Web.config",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-09-24T22:16:46.29Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Web.config",
+              "RelativeDocumentMoniker": "Biblioteca\\Web.config",
+              "ToolTip": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Web.config",
+              "RelativeToolTip": "Biblioteca\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-09-24T22:16:08.278Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "202509240043532_CampoEstatusBibliotecaLibro.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202509240043532_CampoEstatusBibliotecaLibro.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202509240043532_CampoEstatusBibliotecaLibro.cs",
@@ -250,7 +284,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 16,
               "Title": "Error.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Shared\\Error.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Shared\\Error.cshtml",
@@ -262,7 +296,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "202509232308052_Cambios.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202509232308052_Cambios.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202509232308052_Cambios.cs",
@@ -274,7 +308,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 21,
               "Title": "UsuariosController.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Controllers\\Usuario\\UsuariosController.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Controllers\\Usuario\\UsuariosController.cs",
@@ -286,7 +320,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Shared\\_Layout.cshtml",
@@ -298,7 +332,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 26,
               "Title": "202509232143175_CambioPrestamoLibro.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202509232143175_CambioPrestamoLibro.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202509232143175_CambioPrestamoLibro.cs",
@@ -310,7 +344,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 30,
               "Title": "LoginController.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Controllers\\LoginController.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Controllers\\LoginController.cs",
@@ -322,7 +356,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 33,
               "Title": "202509230035483_QuitarModelo.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202509230035483_QuitarModelo.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202509230035483_QuitarModelo.cs",
@@ -334,7 +368,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 27,
               "Title": "EditBook.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Cliente\\EditBook.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Cliente\\EditBook.cshtml",
@@ -346,7 +380,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 34,
               "Title": "AsyncControllerActionInvoker.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\AppData\\Local\\Temp\\.vsdbgsrc\\699240a29965a16a1ab9243778656bb218e80afce9ff4f58d851c59a83480efb\\AsyncControllerActionInvoker.cs",
               "RelativeDocumentMoniker": "..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\699240a29965a16a1ab9243778656bb218e80afce9ff4f58d851c59a83480efb\\AsyncControllerActionInvoker.cs",
@@ -359,7 +393,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 8,
               "Title": "LoginDTO.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\ModelosDTO\\LoginDTO.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\ModelosDTO\\LoginDTO.cs",
@@ -367,11 +401,12 @@
               "RelativeToolTip": "Biblioteca\\Models\\ModelosDTO\\LoginDTO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-22T22:56:21.827Z"
+              "WhenOpened": "2025-09-22T22:56:21.827Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 36,
               "Title": "202509222112391_LibroView.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202509222112391_LibroView.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202509222112391_LibroView.cs",
@@ -383,7 +418,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 19,
               "Title": "Usuario.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\Usuario.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\Usuario.cs",
@@ -395,7 +430,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 37,
               "Title": "RolUsuario.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\RolUsuario.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\RolUsuario.cs",
@@ -407,7 +442,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 25,
               "Title": "RolCliente.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\RolCliente.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\RolCliente.cs",
@@ -419,7 +454,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 22,
               "Title": "Context.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\Context.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\Context.cs",
@@ -431,7 +466,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 12,
               "Title": "Biblioteca.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\Biblioteca.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\Biblioteca.cs",
@@ -443,7 +478,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 24,
               "Title": "Administrador.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\Administrador.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\Administrador.cs",
@@ -455,7 +490,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 14,
               "Title": "GestionPrestamos.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Cliente\\GestionPrestamos.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Cliente\\GestionPrestamos.cshtml",
@@ -467,7 +502,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 38,
               "Title": "TipoPrestamo.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\TipoPrestamo.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\TipoPrestamo.cs",
@@ -479,7 +514,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 41,
               "Title": "CrearUsuario.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Cliente\\CrearUsuario.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Cliente\\CrearUsuario.cshtml",
@@ -491,7 +526,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 42,
               "Title": "202509182239274_NumeroAdquisicion.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202509182239274_NumeroAdquisicion.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202509182239274_NumeroAdquisicion.cs",
@@ -503,7 +538,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 43,
               "Title": "ControllerActionInvoker.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\AppData\\Local\\Temp\\.vsdbgsrc\\07c4ec1cba87e4656ea3ff248a744c9ad14372e0efa94ac6f688b9e3e27ad0b3\\ControllerActionInvoker.cs",
               "RelativeDocumentMoniker": "..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\07c4ec1cba87e4656ea3ff248a744c9ad14372e0efa94ac6f688b9e3e27ad0b3\\ControllerActionInvoker.cs",
@@ -515,7 +550,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 31,
               "Title": "SessionU.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Services\\SessionU.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Services\\SessionU.cs",
@@ -527,7 +562,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 46,
               "Title": "202509100056429_AnadirAutor.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202509100056429_AnadirAutor.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202509100056429_AnadirAutor.cs",
@@ -539,7 +574,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 11,
               "Title": "BibliotecaLibro.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\BibliotecaLibro.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\BibliotecaLibro.cs",
@@ -551,7 +586,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 47,
               "Title": "202509012126208_CambioISBN.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202509012126208_CambioISBN.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202509012126208_CambioISBN.cs",
@@ -563,7 +598,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 13,
               "Title": "PrestamoLibro.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\PrestamoLibro.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\PrestamoLibro.cs",
@@ -575,7 +610,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 5,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Cliente\\Index.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Cliente\\Index.cshtml",
@@ -583,11 +618,12 @@
               "RelativeToolTip": "Biblioteca\\Views\\Cliente\\Index.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAPMAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-29T00:23:38.03Z"
+              "WhenOpened": "2025-08-29T00:23:38.03Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 35,
               "Title": "UsuarioDTO.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\ModelosDTO\\UsuarioDTO.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\ModelosDTO\\UsuarioDTO.cs",
@@ -599,7 +635,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 44,
               "Title": "Libro.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\AppData\\Local\\Temp\\Rar$DIa23548.32188\\Libro.cs",
               "RelativeDocumentMoniker": "..\\..\\AppData\\Local\\Temp\\Rar$DIa23548.32188\\Libro.cs",
@@ -610,7 +646,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 15,
               "Title": "_LayoutCliente.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Shared\\_LayoutCliente.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Shared\\_LayoutCliente.cshtml",
@@ -622,7 +658,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 48,
               "Title": "ThreadContext.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\AppData\\Local\\Temp\\.vsdbgsrc\\ceb10fcf34766010c9522d8365d7ac35881b2c415bbbc9388e5ed3869fe4ad73\\ThreadContext.cs",
               "RelativeDocumentMoniker": "..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\ceb10fcf34766010c9522d8365d7ac35881b2c415bbbc9388e5ed3869fe4ad73\\ThreadContext.cs",
@@ -635,7 +671,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 29,
               "Title": "Cliente.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\Cliente.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\Cliente.cs",
@@ -647,7 +683,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 20,
               "Title": "_PrestamoLibroForm.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Cliente\\_PrestamoLibroForm.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Cliente\\_PrestamoLibroForm.cshtml",
@@ -659,7 +695,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 49,
               "Title": "202508262122087_StringKey.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202508262122087_StringKey.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202508262122087_StringKey.cs",
@@ -671,7 +707,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 39,
               "Title": "Tema.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\Tema.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\Tema.cs",
@@ -683,7 +719,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 23,
               "Title": "BibliotecasController.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Controllers\\Administrador\\BibliotecasController.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Controllers\\Administrador\\BibliotecasController.cs",
@@ -695,7 +731,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 50,
               "Title": "202508130042389_InitialMigration.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Migrations\\202508130042389_InitialMigration.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Migrations\\202508130042389_InitialMigration.cs",
@@ -707,19 +743,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 1,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Login\\Index.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Login\\Index.cshtml",
               "ToolTip": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Login\\Index.cshtml",
               "RelativeToolTip": "Biblioteca\\Views\\Login\\Index.cshtml",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAuwFgAAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAAD0AAAAAAAAAAAAuwFUAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-26T20:54:49.885Z"
+              "WhenOpened": "2025-08-26T20:54:49.885Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 40,
               "Title": "Categoria.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\Categoria.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\Categoria.cs",
@@ -737,38 +774,40 @@
               "RelativeDocumentMoniker": "Biblioteca\\Models\\Libro.cs",
               "ToolTip": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\Libro.cs",
               "RelativeToolTip": "Biblioteca\\Models\\Libro.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAqwBcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAgwBUAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-26T00:19:26.73Z"
+              "WhenOpened": "2025-08-26T00:19:26.73Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "LibroDTO.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\ModelosDTO\\LibroDTO.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Models\\ModelosDTO\\LibroDTO.cs",
               "ToolTip": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Models\\ModelosDTO\\LibroDTO.cs",
               "RelativeToolTip": "Biblioteca\\Models\\ModelosDTO\\LibroDTO.cs",
-              "ViewState": "AgIAAFsAAAAAAAAAAAAcwGYAAAAzAAAAAAAAAA==",
+              "ViewState": "AgIAAF0AAAAAAAAAAAA2wGcAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-22T00:14:28.354Z"
+              "WhenOpened": "2025-08-22T00:14:28.354Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "Libros.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Cliente\\Libros.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Cliente\\Libros.cshtml",
               "ToolTip": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Cliente\\Libros.cshtml",
               "RelativeToolTip": "Biblioteca\\Views\\Cliente\\Libros.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAK8AAAAAAAAAAAAgwMoAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-08-22T00:13:26.897Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 32,
               "Title": "Autenticacion.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Services\\Autenticacion.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Services\\Autenticacion.cs",
@@ -780,7 +819,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 9,
               "Title": "OpenLibraryApi.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Services\\OpenLibraryApi.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Services\\OpenLibraryApi.cs",
@@ -788,12 +827,11 @@
               "RelativeToolTip": "Biblioteca\\Services\\OpenLibraryApi.cs",
               "ViewState": "AgIAAKIAAAAAAAAAAAAswL0AAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-21T23:22:21.659Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-21T23:22:21.659Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 45,
               "Title": "ClientesController.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Controllers\\Administrador\\ClientesController.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Controllers\\Administrador\\ClientesController.cs",
@@ -805,7 +843,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 28,
               "Title": "_UsuarioForm.cshtml",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Views\\Cliente\\_UsuarioForm.cshtml",
               "RelativeDocumentMoniker": "Biblioteca\\Views\\Cliente\\_UsuarioForm.cshtml",
@@ -817,13 +855,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "ClienteController.cs",
               "DocumentMoniker": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Controllers\\Cliente\\ClienteController.cs",
               "RelativeDocumentMoniker": "Biblioteca\\Controllers\\Cliente\\ClienteController.cs",
               "ToolTip": "C:\\Users\\EQUIPO-13\\Documents\\biblioteca 2\\Biblioteca\\Controllers\\Cliente\\ClienteController.cs",
               "RelativeToolTip": "Biblioteca\\Controllers\\Cliente\\ClienteController.cs",
-              "ViewState": "AgIAAAUCAAAAAAAAAADwvx8CAAA1AAAAAAAAAA==",
+              "ViewState": "AgIAAHcBAAAAAAAAAAAAAEUDAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-13T23:27:39.913Z",
               "EditorCaption": ""

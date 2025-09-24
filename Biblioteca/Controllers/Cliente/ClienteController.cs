@@ -41,7 +41,7 @@ namespace Biblioteca.Controllers
 
             ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
             ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
-            ViewBag.LastNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0; // Ya está correcto
+            ViewBag.LastNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
 
             return View(viewModel);
         }
@@ -252,7 +252,7 @@ namespace Biblioteca.Controllers
                 .Include(l => l.Categoria)
                 .ToList();
 
-            var viewModels = libros.Select(l => new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel // Especificar espacio de nombres
+            var viewModels = libros.Select(l => new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel
             {
                 ID = l.ID,
                 ISBN = l.ISBN,
@@ -323,14 +323,14 @@ namespace Biblioteca.Controllers
                     Autor = string.Join(", ", autores)
                 };
 
+                // Registrar los datos del autor para depuración
+                Debug.WriteLine($"Respuesta API - ISBN: {ISBN}, Autores: {string.Join(", ", autores)}");
+
                 var serialized = JsonConvert.SerializeObject(bookData);
                 ViewData["ApiData"] = serialized;
                 Session["ApiDataJson"] = serialized;
                 TempData["ApiDataJson"] = serialized;
                 TempData["BookModel"] = libro;
-
-                Debug.WriteLine($"Año desde API en controlador: {bookData.AnioPrimeraPublicacion}");
-                Debug.WriteLine($"Autores desde API en controlador: {string.Join(", ", autores)}");
 
                 TempData["ShowModal"] = "true";
                 TempData["ModalTitle"] = "Agregar Libro";
@@ -338,6 +338,7 @@ namespace Biblioteca.Controllers
             }
             else
             {
+                Debug.WriteLine($"Respuesta API - ISBN: {ISBN}, No se encontraron libros.");
                 TempData["AlertMessage"] = "No se encontró el libro en la API.";
                 TempData["AlertType"] = "warning";
                 TempData["ShowModal"] = "true";
@@ -350,7 +351,7 @@ namespace Biblioteca.Controllers
                 .Include(l => l.Categoria)
                 .ToList();
 
-            var viewModels = libros.Select(l => new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel // Especificar espacio de nombres
+            var viewModels = libros.Select(l => new BibliotecaLibroViewModel
             {
                 ID = l.ID,
                 ISBN = l.ISBN,
@@ -389,7 +390,7 @@ namespace Biblioteca.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateBook(Libro libro, int CantidadEjemplares = 1, int TemaID = 0)
+        public ActionResult CreateBook(Libro libro, int CantidadEjemplares = 1, int TemaID = 0, string Autor = null)
         {
             try
             {
@@ -408,8 +409,7 @@ namespace Biblioteca.Controllers
 
                 int baseNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
 
-                // 🔹 Obtener autores desde la API si existe
-                string autoresStr = "Desconocido";
+                string autoresStr = Autor ?? "Desconocido"; // Usa el autor del formulario si está disponible
                 if (TempData["ApiDataJson"] != null)
                 {
                     var apiData = JsonConvert.DeserializeObject<LibroInformacionDTO>((string)TempData["ApiDataJson"]);
@@ -429,7 +429,7 @@ namespace Biblioteca.Controllers
                         Clasificacion = libro.Clasificacion ?? GenerateClasificacion(libro, ultimoEjemplar + i),
                         Estatus = true,
                         CategoriaID = libro.CategoriaID,
-                        Autor = autoresStr, // aquí se guardan los autores reales
+                        Autor = autoresStr, // Asegura que el autor se establezca
                         NumeroAdquisicion = baseNumeroAdquisicion + i
                     };
                     db.Libros.Add(newLibro);
@@ -458,15 +458,12 @@ namespace Biblioteca.Controllers
             }
         }
 
-
-
-
         private string GenerateClasificacion(Libro libro, int ejemplar, int anio = 0, string temaNombre = null)
         {
             var categoriaClave = db.Categorias.FirstOrDefault(c => c.ID == libro.CategoriaID)?.Clave ?? "000";
             var tema = !string.IsNullOrEmpty(temaNombre)
-                        ? (temaNombre.Length >= 3 ? temaNombre.Substring(0, 3) : temaNombre)
-                        : (!string.IsNullOrEmpty(libro.Materia) ? (libro.Materia.Length >= 3 ? libro.Materia.Substring(0, 3) : libro.Materia) : "GEN");
+                ? (temaNombre.Length >= 3 ? temaNombre.Substring(0, 3) : temaNombre)
+                : (!string.IsNullOrEmpty(libro.Materia) ? (libro.Materia.Length >= 3 ? libro.Materia.Substring(0, 3) : libro.Materia) : "GEN");
             if (anio == 0) anio = DateTime.Now.Year;
             return $"{categoriaClave} - {tema} - {anio} - {ejemplar}";
         }
@@ -475,10 +472,10 @@ namespace Biblioteca.Controllers
         public JsonResult GetTemasByCategoria(int categoriaId)
         {
             var temas = db.Temas
-                        .Where(t => t.CategoriaID == categoriaId)
-                        .Select(t => new { t.ID, t.Nombre })
-                        .OrderBy(t => t.Nombre)
-                        .ToList();
+                .Where(t => t.CategoriaID == categoriaId)
+                .Select(t => new { t.ID, t.Nombre })
+                .OrderBy(t => t.Nombre)
+                .ToList();
             return Json(temas, JsonRequestBehavior.AllowGet);
         }
 
@@ -493,7 +490,7 @@ namespace Biblioteca.Controllers
                 return RedirectToAction("Libros");
             }
 
-            var viewModel = new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel // Especificar espacio de nombres
+            var viewModel = new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel
             {
                 ID = libro.ID,
                 ISBN = libro.ISBN,
@@ -590,9 +587,8 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet]
-        public ActionResult LendBook(int id) // id = Libro.ID
+        public ActionResult LendBook(int id)
         {
-            // Buscar un registro disponible en BibliotecaLibros
             var bibliotecaLibro = db.BibliotecaLibros
                 .Include(bl => bl.Libro)
                 .FirstOrDefault(bl => bl.LibroID == id && bl.Libro.Estatus);
@@ -604,13 +600,8 @@ namespace Biblioteca.Controllers
                 return RedirectToAction("Libros");
             }
 
-            // Redirigir a la vista de asignar préstamo con el ID correcto de BibliotecaLibro
             return RedirectToAction("AssignLoan", new { id = bibliotecaLibro.ID });
         }
-
-
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -644,8 +635,6 @@ namespace Biblioteca.Controllers
             prestamo.Observacion = string.Empty;
 
             db.PrestamoLibros.Add(prestamo);
-
-            // Marcar ejemplar como prestado
             bibliotecaLibro.Estatus = false;
             db.Entry(bibliotecaLibro).State = EntityState.Modified;
 
@@ -656,9 +645,8 @@ namespace Biblioteca.Controllers
             return RedirectToAction("Libros");
         }
 
-
         [HttpGet]
-        public ActionResult AssignLoan(int id) // id = BibliotecaLibro.ID
+        public ActionResult AssignLoan(int id)
         {
             ViewBag.Usuarios = new SelectList(db.Usuarios, "ID", "Nombre");
             ViewBag.TipoPrestamos = new SelectList(db.TipoPrestamos, "ID", "Nombre");
@@ -694,7 +682,6 @@ namespace Biblioteca.Controllers
                 return View("_PrestamoLibroForm", prestamo);
             }
 
-            // 🔹 Buscar BibliotecaLibro disponible
             var bibliotecaLibro = db.BibliotecaLibros
                 .Include(bl => bl.Libro)
                 .FirstOrDefault(bl => bl.ID == prestamo.BibliotecaLibroID);
@@ -721,7 +708,6 @@ namespace Biblioteca.Controllers
                 return RedirectToAction("Libros");
             }
 
-            // 🔹 Registrar préstamo
             prestamo.FechaPrestamo = ToUnixTimestamp(DateTime.Now);
             prestamo.FechaEntrega = ToUnixTimestamp(DateTime.Now.AddDays(tipoPrestamo.Tiempo));
             prestamo.FechaEntregaReal = 0;
@@ -729,8 +715,6 @@ namespace Biblioteca.Controllers
             prestamo.Observacion = string.Empty;
 
             db.PrestamoLibros.Add(prestamo);
-
-            // 🔹 Cambiar estado del libro a prestado
             bibliotecaLibro.Libro.Estatus = false;
             db.Entry(bibliotecaLibro.Libro).State = EntityState.Modified;
 
@@ -741,9 +725,8 @@ namespace Biblioteca.Controllers
             return RedirectToAction("Libros");
         }
 
-
         [HttpGet]
-        public ActionResult ReturnBook(int id) // id = PrestamoLibro.ID
+        public ActionResult ReturnBook(int id)
         {
             var prestamo = db.PrestamoLibros
                 .Include(p => p.BibliotecaLibro.Libro)
@@ -756,11 +739,9 @@ namespace Biblioteca.Controllers
                 return RedirectToAction("GestionPrestamos");
             }
 
-            // Marcar como devuelto
             prestamo.Devuelto = true;
             prestamo.FechaEntregaReal = ToUnixTimestamp(DateTime.Now);
 
-            // Cambiar estado del libro a disponible
             if (prestamo.BibliotecaLibro.Libro != null)
             {
                 prestamo.BibliotecaLibro.Libro.Estatus = true;
@@ -775,13 +756,10 @@ namespace Biblioteca.Controllers
             return RedirectToAction("GestionPrestamos");
         }
 
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ReturnBook(PrestamoLibro prestamo)
         {
-            // 🔹 Cargar préstamo con BibliotecaLibro y Libro
             var prestamoDb = db.PrestamoLibros
                 .Include(p => p.BibliotecaLibro.Libro)
                 .FirstOrDefault(p => p.ID == prestamo.ID);
@@ -801,8 +779,6 @@ namespace Biblioteca.Controllers
             }
 
             int ahora = ToUnixTimestamp(DateTime.Now);
-
-            // 🔹 Calcular multa si aplica
             int tarifaMulta = 5;
             int multa = 0;
             string observacion = (Request.Form["Observacion"] ?? "").Trim();
@@ -814,13 +790,11 @@ namespace Biblioteca.Controllers
                 observacion += $" Multa aplicada por {diasRetraso} día(s) de retraso.";
             }
 
-            // 🔹 Actualizar préstamo
             prestamoDb.Devuelto = true;
             prestamoDb.FechaEntregaReal = ahora;
             prestamoDb.Multa = multa;
             prestamoDb.Observacion = observacion;
 
-            // 🔹 Marcar libro como disponible
             if (prestamoDb.BibliotecaLibro?.Libro != null)
             {
                 prestamoDb.BibliotecaLibro.Libro.Estatus = true;
@@ -835,9 +809,6 @@ namespace Biblioteca.Controllers
             return RedirectToAction("GestionPrestamos");
         }
 
-
-
-        // ✅ Listado de préstamos activos y devueltos
         public ActionResult GestionPrestamos()
         {
             var prestamosActivos = db.PrestamoLibros
@@ -846,21 +817,17 @@ namespace Biblioteca.Controllers
                 .Where(p => !p.Devuelto && p.BibliotecaLibro != null && p.BibliotecaLibro.Libro != null)
                 .ToList();
 
-
             var prestamosDevueltos = db.PrestamoLibros
                 .Include(p => p.BibliotecaLibro.Libro)
                 .Include(p => p.Usuario)
                 .Where(p => p.Devuelto && p.BibliotecaLibro != null && p.BibliotecaLibro.Libro != null)
                 .ToList();
 
-
             ViewBag.PrestamosActivos = prestamosActivos;
             ViewBag.PrestamosDevueltos = prestamosDevueltos;
 
             return View();
         }
-
-
 
         private static int ToUnixTimestamp(DateTime dateTime)
         {
