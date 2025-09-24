@@ -1,0 +1,100 @@
+﻿@model IEnumerable<Biblioteca.Models.PrestamoLibro>
+@{
+    ViewBag.Title = "Gestión de Préstamos";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container-fluid mt-3">
+    <h2 class="mb-4">Gestión de Préstamos</h2>
+
+    <div class="row">
+        <div class="col-12 mb-5">
+            <h4>Préstamos Activos</h4>
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Libro</th>
+                        <th>Usuario</th>
+                        <th>Fecha Préstamo</th>
+                        <th>Fecha Entrega</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.PrestamosActivos != null && ((List<Biblioteca.Models.PrestamoLibro>)ViewBag.PrestamosActivos).Any())
+                    {
+                        foreach (var p in (List<Biblioteca.Models.PrestamoLibro>)ViewBag.PrestamosActivos)
+                        {
+                            <tr>
+                                <td>@p.BibliotecaLibro.Libro.ISBN - @p.BibliotecaLibro.Libro.Materia</td>
+                                <td>@p.Usuario.Nombre</td>
+                                <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaPrestamo).ToString("dd/MM/yyyy"))</td>
+                                <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaEntrega).ToString("dd/MM/yyyy"))</td>
+                                <td>
+                                    <span class="badge bg-warning">Activo</span>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("ReturnBook", "Cliente", new { id = p.ID })" class="btn btn-info btn-sm">
+                                        <i class="fas fa-undo"></i> Devolver
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">No hay préstamos activos.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-12">
+            <h4>Préstamos Devueltos</h4>
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Libro</th>
+                        <th>Usuario</th>
+                        <th>Fecha Préstamo</th>
+                        <th>Fecha Entrega</th>
+                        <th>Fecha Entrega Real</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.PrestamosDevueltos != null && ((List<Biblioteca.Models.PrestamoLibro>)ViewBag.PrestamosDevueltos).Any())
+                    {
+                        foreach (var p in (List<Biblioteca.Models.PrestamoLibro>)ViewBag.PrestamosDevueltos)
+                        {
+                            <tr>
+                                <td>@p.BibliotecaLibro.Libro.ISBN - @p.BibliotecaLibro.Libro.Materia</td>
+                                <td>@p.Usuario.Nombre</td>
+                                <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaPrestamo).ToString("dd/MM/yyyy"))</td>
+                                <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaEntrega).ToString("dd/MM/yyyy"))</td>
+                                @(p.FechaEntregaReal.HasValue
+                                ? DateTimeOffset.FromUnixTimeSeconds(p.FechaEntregaReal.Value).ToString("dd/MM/yyyy")
+                                : "-")
+
+                                <td>
+                                    <span class="badge bg-success">Devuelto</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">No hay préstamos devueltos.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

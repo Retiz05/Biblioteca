@@ -9,47 +9,49 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Biblioteca.Controllers
 {
     public class ClienteController : Controller
     {
-        private readonly Context _context;
+        private readonly Context db = new Context();
 
-        public ClienteController()
-        {
-            _context = new Context();
-        }
-
+        [HttpGet]
         public ActionResult Index()
         {
-            var librosEstado = _context.Libros.Select(l => new LibroEstadoDTO
-            {
-                ISBN = l.ISBN ?? l.ID.ToString(),
-                Materia = l.Materia,
-                NumeroEjemplar = l.NumeroEjemplar,
-                Estatus = l.Estatus
-            }).ToList();
+            var libros = db.Libros
+                .Include(l => l.Categoria)
+                .ToList();
 
-            var model = new ClienteDashboardViewModel
+            var viewModel = new ClienteDashboardViewModel
             {
-                TotalLibros = _context.Libros.Count(),
-                LibrosPrestados = _context.Libros.Count(l => l.Estatus == false),
-                LibrosDisponibles = _context.Libros.Count(l => l.Estatus == true),
-                LibrosEstado = librosEstado
+                LibrosEstado = libros.Select(l => new LibroEstadoDTO
+                {
+                    ISBN = l.ISBN,
+                    Materia = l.Materia,
+                    NumeroEjemplar = l.NumeroEjemplar,
+                    Estatus = l.Estatus
+                }).ToList(),
+                TotalLibros = libros.Count,
+                LibrosDisponibles = libros.Count(l => l.Estatus),
+                LibrosPrestados = libros.Count(l => !l.Estatus)
             };
 
-            return View(model);
-        }
+            ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
+            ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
+            ViewBag.LastNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0; // Ya está correcto
 
+            return View(viewModel);
+        }
 
         public ActionResult Usuarios()
         {
             IEnumerable<Usuario> usuarios;
             try
             {
-                usuarios = _context.Usuarios.Include(u => u.RolUsuario).ToList();
+                usuarios = db.Usuarios.Include(u => u.RolUsuario).ToList();
                 if (usuarios == null)
                 {
                     usuarios = new List<Usuario>();
@@ -74,14 +76,14 @@ namespace Biblioteca.Controllers
                 TempData["AlertMessage"] = $"Error al cargar los usuarios: {ex.Message}";
                 TempData["AlertType"] = "error";
             }
-            ViewBag.Roles = new SelectList(_context.RolUsuarios, "ID", "Nombre");
+            ViewBag.Roles = new SelectList(db.RolUsuarios, "ID", "Nombre");
             return View(usuarios);
         }
 
         public ActionResult CrearUsuario()
         {
-            var usuarios = _context.Usuarios.Include(u => u.RolUsuario).ToList();
-            ViewBag.Roles = new SelectList(_context.RolUsuarios, "ID", "Nombre");
+            var usuarios = db.Usuarios.Include(u => u.RolUsuario).ToList();
+            ViewBag.Roles = new SelectList(db.RolUsuarios, "ID", "Nombre");
             TempData["ShowModal"] = "true";
             TempData["ModalTitle"] = "Crear Usuario";
             TempData["UserModel"] = new Usuario();
@@ -96,8 +98,8 @@ namespace Biblioteca.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    var usuarios = _context.Usuarios.Include(u => u.RolUsuario).ToList();
-                    ViewBag.Roles = new SelectList(_context.RolUsuarios, "ID", "Nombre");
+                    var usuarios = db.Usuarios.Include(u => u.RolUsuario).ToList();
+                    ViewBag.Roles = new SelectList(db.RolUsuarios, "ID", "Nombre");
                     TempData["ShowModal"] = "true";
                     TempData["ModalTitle"] = "Crear Usuario";
                     TempData["UserModel"] = usuario;
@@ -114,8 +116,8 @@ namespace Biblioteca.Controllers
                 if (string.IsNullOrEmpty(usuario.Contrasena))
                 {
                     ModelState.AddModelError("Contrasena", "La contraseña es obligatoria.");
-                    var usuarios = _context.Usuarios.Include(u => u.RolUsuario).ToList();
-                    ViewBag.Roles = new SelectList(_context.RolUsuarios, "ID", "Nombre");
+                    var usuarios = db.Usuarios.Include(u => u.RolUsuario).ToList();
+                    ViewBag.Roles = new SelectList(db.RolUsuarios, "ID", "Nombre");
                     TempData["ShowModal"] = "true";
                     TempData["ModalTitle"] = "Crear Usuario";
                     TempData["UserModel"] = usuario;
@@ -123,8 +125,8 @@ namespace Biblioteca.Controllers
                 }
 
                 usuario.BibliotecaID = Convert.ToInt32(Session["BibliotecaID"]);
-                _context.Usuarios.Add(usuario);
-                _context.SaveChanges();
+                db.Usuarios.Add(usuario);
+                db.SaveChanges();
                 TempData["AlertMessage"] = "Usuario registrado correctamente.";
                 TempData["AlertType"] = "success";
                 return RedirectToAction("Usuarios");
@@ -133,8 +135,8 @@ namespace Biblioteca.Controllers
             {
                 TempData["AlertMessage"] = $"Error al registrar el usuario: {ex.Message}";
                 TempData["AlertType"] = "error";
-                var usuarios = _context.Usuarios.Include(u => u.RolUsuario).ToList();
-                ViewBag.Roles = new SelectList(_context.RolUsuarios, "ID", "Nombre");
+                var usuarios = db.Usuarios.Include(u => u.RolUsuario).ToList();
+                ViewBag.Roles = new SelectList(db.RolUsuarios, "ID", "Nombre");
                 TempData["ShowModal"] = "true";
                 TempData["ModalTitle"] = "Crear Usuario";
                 TempData["UserModel"] = usuario;
@@ -144,15 +146,15 @@ namespace Biblioteca.Controllers
 
         public ActionResult EditarUsuario(int id)
         {
-            var usuarios = _context.Usuarios.Include(u => u.RolUsuario).ToList();
-            var usuario = _context.Usuarios.Find(id);
+            var usuarios = db.Usuarios.Include(u => u.RolUsuario).ToList();
+            var usuario = db.Usuarios.Find(id);
             if (usuario == null)
             {
                 TempData["AlertMessage"] = "Usuario no encontrado.";
                 TempData["AlertType"] = "error";
                 return RedirectToAction("Usuarios");
             }
-            ViewBag.Roles = new SelectList(_context.RolUsuarios, "ID", "Nombre");
+            ViewBag.Roles = new SelectList(db.RolUsuarios, "ID", "Nombre");
             TempData["ShowModal"] = "true";
             TempData["ModalTitle"] = "Editar Usuario";
             TempData["UserModel"] = usuario;
@@ -167,8 +169,8 @@ namespace Biblioteca.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    var usuarios = _context.Usuarios.Include(u => u.RolUsuario).ToList();
-                    ViewBag.Roles = new SelectList(_context.RolUsuarios, "ID", "Nombre");
+                    var usuarios = db.Usuarios.Include(u => u.RolUsuario).ToList();
+                    ViewBag.Roles = new SelectList(db.RolUsuarios, "ID", "Nombre");
                     TempData["ShowModal"] = "true";
                     TempData["ModalTitle"] = "Editar Usuario";
                     TempData["UserModel"] = usuario;
@@ -182,7 +184,7 @@ namespace Biblioteca.Controllers
                     return RedirectToAction("Usuarios");
                 }
 
-                var existingUsuario = _context.Usuarios.Find(usuario.ID);
+                var existingUsuario = db.Usuarios.Find(usuario.ID);
                 if (existingUsuario == null)
                 {
                     TempData["AlertMessage"] = "Usuario no encontrado.";
@@ -199,8 +201,8 @@ namespace Biblioteca.Controllers
                     existingUsuario.Contrasena = usuario.Contrasena;
                 }
 
-                _context.Entry(existingUsuario).State = EntityState.Modified;
-                _context.SaveChanges();
+                db.Entry(existingUsuario).State = EntityState.Modified;
+                db.SaveChanges();
                 TempData["AlertMessage"] = "Usuario editado correctamente.";
                 TempData["AlertType"] = "success";
                 return RedirectToAction("Usuarios");
@@ -209,8 +211,8 @@ namespace Biblioteca.Controllers
             {
                 TempData["AlertMessage"] = $"Error al editar el usuario: {ex.Message}";
                 TempData["AlertType"] = "error";
-                var usuarios = _context.Usuarios.Include(u => u.RolUsuario).ToList();
-                ViewBag.Roles = new SelectList(_context.RolUsuarios, "ID", "Nombre");
+                var usuarios = db.Usuarios.Include(u => u.RolUsuario).ToList();
+                ViewBag.Roles = new SelectList(db.RolUsuarios, "ID", "Nombre");
                 TempData["ShowModal"] = "true";
                 TempData["ModalTitle"] = "Editar Usuario";
                 TempData["UserModel"] = usuario;
@@ -220,7 +222,7 @@ namespace Biblioteca.Controllers
 
         public ActionResult DeleteUser(int id)
         {
-            var usuario = _context.Usuarios.Find(id);
+            var usuario = db.Usuarios.Find(id);
             if (usuario == null)
             {
                 TempData["AlertMessage"] = "Usuario no encontrado.";
@@ -229,8 +231,8 @@ namespace Biblioteca.Controllers
             }
             try
             {
-                _context.Usuarios.Remove(usuario);
-                _context.SaveChanges();
+                db.Usuarios.Remove(usuario);
+                db.SaveChanges();
                 TempData["AlertMessage"] = "Usuario eliminado correctamente.";
                 TempData["AlertType"] = "success";
                 return RedirectToAction("Usuarios");
@@ -243,17 +245,35 @@ namespace Biblioteca.Controllers
             }
         }
 
+        [HttpGet]
         public ActionResult Libros()
         {
-            var libros = _context.Libros.Include(l => l.Categoria).ToList();
-            ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-            ViewBag.Temas = new SelectList(_context.Temas, "ID", "Nombre");
-            ViewBag.Usuarios = new SelectList(_context.Usuarios, "ID", "Nombre");
-            ViewBag.TipoPrestamos = new SelectList(_context.TipoPrestamos, "ID", "Nombre");
-            ViewBag.TotalLibros = _context.Libros.Count();
-            ViewBag.LibrosPrestados = _context.Libros.Count(l => l.Estatus == false);
-            ViewBag.LibrosDisponibles = _context.Libros.Count(l => l.Estatus == true);
-            return View(libros); // Pasar el modelo explícitamente
+            var libros = db.Libros
+                .Include(l => l.Categoria)
+                .ToList();
+
+            var viewModels = libros.Select(l => new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel // Especificar espacio de nombres
+            {
+                ID = l.ID,
+                ISBN = l.ISBN,
+                Materia = l.Materia,
+                NumeroEjemplar = l.NumeroEjemplar,
+                Clasificacion = l.Clasificacion,
+                Estatus = l.Estatus,
+                Autor = l.Autor ?? "Desconocido",
+                NumeroAdquisicion = l.NumeroAdquisicion,
+                CategoriaNombre = l.Categoria?.Nombre ?? "Sin categoría",
+                PrestamoActivoId = null
+            }).ToList();
+
+            ViewBag.TotalLibros = viewModels.Count;
+            ViewBag.LibrosDisponibles = viewModels.Count(vm => vm.Estatus);
+            ViewBag.LibrosPrestados = viewModels.Count(vm => !vm.Estatus);
+            ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
+            ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
+            ViewBag.LastNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
+
+            return View(viewModels);
         }
 
         [HttpGet]
@@ -275,14 +295,13 @@ namespace Biblioteca.Controllers
                     .FirstOrDefault(d => d.NombresAutor != null && d.NombresAutor.Any() && d.NombresAutor[0] != "Desconocido")
                     ?? apiResponse.Documentos.First();
 
-                // Asegurar que NombresAutor se extraiga correctamente
                 if (bookData.NombresAutor == null || !bookData.NombresAutor.Any())
                 {
                     bookData.NombresAutor = bookData.Contributors?.Where(c => c.Role?.ToLower().Contains("author") ?? false)
                         .Select(c => c.Name).ToList() ?? new List<string> { "Desconocido" };
                 }
 
-                int ultimoEjemplar = _context.Libros
+                int ultimoEjemplar = db.Libros
                     .Where(l => l.ISBN == ISBN)
                     .OrderByDescending(l => l.NumeroEjemplar)
                     .Select(l => l.NumeroEjemplar)
@@ -327,22 +346,44 @@ namespace Biblioteca.Controllers
                 ViewData["ApiData"] = null;
             }
 
-            ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-            ViewBag.Temas = new SelectList(_context.Temas, "ID", "Nombre");
+            var libros = db.Libros
+                .Include(l => l.Categoria)
+                .ToList();
 
-            return View("Libros", _context.Libros.Include(l => l.Categoria).ToList());
+            var viewModels = libros.Select(l => new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel // Especificar espacio de nombres
+            {
+                ID = l.ID,
+                ISBN = l.ISBN,
+                Materia = l.Materia,
+                NumeroEjemplar = l.NumeroEjemplar,
+                Clasificacion = l.Clasificacion,
+                Estatus = l.Estatus,
+                Autor = l.Autor ?? "Desconocido",
+                NumeroAdquisicion = l.NumeroAdquisicion,
+                CategoriaNombre = l.Categoria?.Nombre ?? "Sin categoría",
+                PrestamoActivoId = null
+            }).ToList();
+
+            ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
+            ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
+            ViewBag.TotalLibros = viewModels.Count;
+            ViewBag.LibrosDisponibles = viewModels.Count(vm => vm.Estatus);
+            ViewBag.LibrosPrestados = viewModels.Count(vm => !vm.Estatus);
+            ViewBag.LastNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
+
+            return View("Libros", viewModels);
         }
 
         [HttpGet]
         public ActionResult CreateBook()
         {
-            var libros = _context.Libros.Include(l => l.Categoria).ToList();
-            ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-            ViewBag.Temas = new SelectList(_context.Temas, "ID", "Nombre");
+            var libros = db.Libros.Include(l => l.Categoria).ToList();
+            ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
+            ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
             TempData["ShowModal"] = "true";
             TempData["ModalTitle"] = "Agregar Libro";
             TempData["BookModel"] = new Libro();
-            ViewData["ApiData"] = null; // Asegurar valor por defecto
+            ViewData["ApiData"] = null;
             return View("Libros", libros);
         }
 
@@ -356,89 +397,54 @@ namespace Biblioteca.Controllers
                 {
                     TempData["AlertMessage"] = "Ingrese una cantidad válida de ejemplares.";
                     TempData["AlertType"] = "error";
-                    TempData["ShowModal"] = "true";
-                    TempData["ModalTitle"] = "Agregar Libro";
-                    TempData["BookModel"] = libro;
-                    ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-                    ViewBag.Temas = new SelectList(_context.Temas, "ID", "Nombre");
-                    return View("Libros", _context.Libros.Include(l => l.Categoria).ToList());
+                    return RedirectToAction("Libros");
                 }
 
-                var categoria = _context.Categorias.Find(libro.CategoriaID);
-                if (categoria == null)
-                {
-                    TempData["AlertMessage"] = "La categoría seleccionada no existe.";
-                    TempData["AlertType"] = "error";
-                    TempData["ShowModal"] = "true";
-                    TempData["ModalTitle"] = "Agregar Libro";
-                    TempData["BookModel"] = libro;
-                    ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-                    ViewBag.Temas = new SelectList(_context.Temas, "ID", "Nombre");
-                    return View("Libros", _context.Libros.Include(l => l.Categoria).ToList());
-                }
-
-                int ultimoEjemplar = _context.Libros
+                int ultimoEjemplar = db.Libros
                     .Where(l => l.ISBN == libro.ISBN)
                     .Select(l => l.NumeroEjemplar)
                     .DefaultIfEmpty(0)
                     .Max();
 
-                List<string> autores = new List<string> { "Desconocido" };
-                if (Session["ApiDataJson"] != null)
+                int baseNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
+
+                // 🔹 Obtener autores desde la API si existe
+                string autoresStr = "Desconocido";
+                if (TempData["ApiDataJson"] != null)
                 {
-                    var apiData = JsonConvert.DeserializeObject<LibroInformacionDTO>((string)Session["ApiDataJson"]);
+                    var apiData = JsonConvert.DeserializeObject<LibroInformacionDTO>((string)TempData["ApiDataJson"]);
                     if (apiData?.NombresAutor != null && apiData.NombresAutor.Any())
-                        autores = apiData.NombresAutor;
-                    else if (apiData?.Contributors != null && apiData.Contributors.Any())
-                        autores = apiData.Contributors
-                            .Where(c => c.Role != null && c.Role.ToLower().Contains("author"))
-                            .Select(c => c.Name)
-                            .ToList() ?? new List<string> { "Desconocido" };
-                }
-                string autoresStr = string.Join(", ", autores);
-
-                string temaNombre = null;
-                if (TemaID > 0)
-                {
-                    var tema = _context.Temas.Find(TemaID);
-                    if (tema != null) temaNombre = tema.Nombre;
-                }
-
-                int anio = DateTime.Now.Year;
-                if (Session["ApiDataJson"] != null)
-                {
-                    var apiDataTmp = JsonConvert.DeserializeObject<LibroInformacionDTO>((string)Session["ApiDataJson"]);
-                    if (apiDataTmp?.AnioPrimeraPublicacion != null)
-                        anio = apiDataTmp.AnioPrimeraPublicacion.Value;
-                    else if (!string.IsNullOrEmpty(apiDataTmp?.PublishDate))
-                        anio = OpenLibraryApi.ParseYear(apiDataTmp.PublishDate) ?? anio;
+                    {
+                        autoresStr = string.Join(", ", apiData.NombresAutor);
+                    }
                 }
 
                 for (int i = 1; i <= CantidadEjemplares; i++)
                 {
-                    var ejemplarNum = ultimoEjemplar + i;
                     var newLibro = new Libro
                     {
                         ISBN = libro.ISBN,
                         Materia = libro.Materia,
-                        NumeroEjemplar = ejemplarNum,
-                        Clasificacion = libro.Clasificacion ?? GenerateClasificacion(libro, ejemplarNum, anio, temaNombre),
+                        NumeroEjemplar = ultimoEjemplar + i,
+                        Clasificacion = libro.Clasificacion ?? GenerateClasificacion(libro, ultimoEjemplar + i),
                         Estatus = true,
                         CategoriaID = libro.CategoriaID,
-                        Autor = autoresStr
+                        Autor = autoresStr, // aquí se guardan los autores reales
+                        NumeroAdquisicion = baseNumeroAdquisicion + i
                     };
-                    _context.Libros.Add(newLibro);
+                    db.Libros.Add(newLibro);
+                    db.SaveChanges();
+
+                    var bibliotecaLibro = new BibliotecaLibro
+                    {
+                        LibroID = newLibro.ID,
+                        BibliotecaID = Convert.ToInt32(Session["BibliotecaID"]),
+                        Estatus = true
+                    };
+                    db.BibliotecaLibros.Add(bibliotecaLibro);
                 }
 
-                _context.SaveChanges();
-
-                var ultimos = _context.Libros
-                    .Where(l => l.ISBN == libro.ISBN)
-                    .OrderByDescending(l => l.ID)
-                    .Take(CantidadEjemplares)
-                    .ToList();
-                TempData["InsertedPreview"] = JsonConvert.SerializeObject(ultimos);
-                Session.Remove("ApiDataJson");
+                db.SaveChanges();
 
                 TempData["AlertMessage"] = $"{CantidadEjemplares} ejemplar(es) registrado(s) correctamente.";
                 TempData["AlertType"] = "success";
@@ -448,29 +454,16 @@ namespace Biblioteca.Controllers
             {
                 TempData["AlertMessage"] = $"Error al registrar el libro: {ex.Message}";
                 TempData["AlertType"] = "error";
-                TempData["ShowModal"] = "true";
-                TempData["ModalTitle"] = "Agregar Libro";
-                TempData["BookModel"] = libro;
-                ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-                ViewBag.Temas = new SelectList(_context.Temas, "ID", "Nombre");
-                return View("Libros", _context.Libros.Include(l => l.Categoria).ToList());
+                return RedirectToAction("Libros");
             }
         }
 
 
 
-        // Generar clasificación
-        private string GenerateClasificacion(LibroInformacionDTO bookData, int ejemplar)
-        {
-            var categoria = _context.Categorias.FirstOrDefault(c => c.Nombre == "General")?.Clave ?? "000";
-            var tema = bookData.Titulo.Length >= 3 ? bookData.Titulo.Substring(0, 3) : "GEN";
-            var anio = bookData.AnioPrimeraPublicacion > 0 ? bookData.AnioPrimeraPublicacion : DateTime.Now.Year;
-            return $"{categoria}-{tema}-{anio}-{ejemplar}";
-        }
 
         private string GenerateClasificacion(Libro libro, int ejemplar, int anio = 0, string temaNombre = null)
         {
-            var categoriaClave = _context.Categorias.FirstOrDefault(c => c.ID == libro.CategoriaID)?.Clave ?? "000";
+            var categoriaClave = db.Categorias.FirstOrDefault(c => c.ID == libro.CategoriaID)?.Clave ?? "000";
             var tema = !string.IsNullOrEmpty(temaNombre)
                         ? (temaNombre.Length >= 3 ? temaNombre.Substring(0, 3) : temaNombre)
                         : (!string.IsNullOrEmpty(libro.Materia) ? (libro.Materia.Length >= 3 ? libro.Materia.Substring(0, 3) : libro.Materia) : "GEN");
@@ -478,12 +471,10 @@ namespace Biblioteca.Controllers
             return $"{categoriaClave} - {tema} - {anio} - {ejemplar}";
         }
 
-
-
         [HttpGet]
         public JsonResult GetTemasByCategoria(int categoriaId)
         {
-            var temas = _context.Temas
+            var temas = db.Temas
                         .Where(t => t.CategoriaID == categoriaId)
                         .Select(t => new { t.ID, t.Nombre })
                         .OrderBy(t => t.Nombre)
@@ -491,25 +482,34 @@ namespace Biblioteca.Controllers
             return Json(temas, JsonRequestBehavior.AllowGet);
         }
 
-
-
-
+        [HttpGet]
         public ActionResult EditBook(int id)
         {
-            var libros = _context.Libros.Include(l => l.Categoria).ToList();
-            var libro = _context.Libros.Find(id);
+            var libro = db.Libros.Find(id);
             if (libro == null)
             {
                 TempData["AlertMessage"] = "Libro no encontrado.";
                 TempData["AlertType"] = "error";
                 return RedirectToAction("Libros");
             }
-            ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-            ViewBag.Temas = new SelectList(_context.Temas, "Nombre", "Nombre");
-            TempData["ShowModal"] = "true";
-            TempData["ModalTitle"] = "Editar Libro";
-            TempData["BookModel"] = libro;
-            return View("Libros", libros);
+
+            var viewModel = new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel // Especificar espacio de nombres
+            {
+                ID = libro.ID,
+                ISBN = libro.ISBN,
+                Materia = libro.Materia,
+                NumeroEjemplar = libro.NumeroEjemplar,
+                Clasificacion = libro.Clasificacion,
+                Estatus = libro.Estatus,
+                Autor = libro.Autor ?? "Desconocido",
+                NumeroAdquisicion = libro.NumeroAdquisicion,
+                CategoriaNombre = libro.Categoria?.Nombre ?? "Sin categoría",
+                PrestamoActivoId = null
+            };
+
+            ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre", libro.CategoriaID);
+            ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
+            return View("EditBook", viewModel);
         }
 
         [HttpPost]
@@ -520,16 +520,16 @@ namespace Biblioteca.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    var libros = _context.Libros.Include(l => l.Categoria).ToList();
-                    ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-                    ViewBag.Temas = new SelectList(_context.Temas, "Nombre", "Nombre");
+                    var libros = db.Libros.Include(l => l.Categoria).ToList();
+                    ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
+                    ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
                     TempData["ShowModal"] = "true";
                     TempData["ModalTitle"] = "Editar Libro";
                     TempData["BookModel"] = libro;
                     return View("Libros", libros);
                 }
 
-                var existingLibro = _context.Libros.Find(libro.ID);
+                var existingLibro = db.Libros.Find(libro.ID);
                 if (existingLibro == null)
                 {
                     TempData["AlertMessage"] = "Libro no encontrado.";
@@ -537,15 +537,15 @@ namespace Biblioteca.Controllers
                     return RedirectToAction("Libros");
                 }
 
-                existingLibro.ISBN = libro.ISBN; // Cambiado de KEY a ISBN
+                existingLibro.ISBN = libro.ISBN;
                 existingLibro.Materia = libro.Materia;
                 existingLibro.NumeroEjemplar = libro.NumeroEjemplar;
                 existingLibro.Clasificacion = libro.Clasificacion;
                 existingLibro.CategoriaID = libro.CategoriaID;
                 existingLibro.Estatus = libro.Estatus;
 
-                _context.Entry(existingLibro).State = EntityState.Modified;
-                _context.SaveChanges();
+                db.Entry(existingLibro).State = EntityState.Modified;
+                db.SaveChanges();
                 TempData["AlertMessage"] = "Libro editado correctamente.";
                 TempData["AlertType"] = "success";
                 return RedirectToAction("Libros");
@@ -554,9 +554,9 @@ namespace Biblioteca.Controllers
             {
                 TempData["AlertMessage"] = $"Error al editar el libro: {ex.Message}";
                 TempData["AlertType"] = "error";
-                var libros = _context.Libros.Include(l => l.Categoria).ToList();
-                ViewBag.Categorias = new SelectList(_context.Categorias, "ID", "Nombre");
-                ViewBag.Temas = new SelectList(_context.Temas, "Nombre", "Nombre");
+                var libros = db.Libros.Include(l => l.Categoria).ToList();
+                ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
+                ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
                 TempData["ShowModal"] = "true";
                 TempData["ModalTitle"] = "Editar Libro";
                 TempData["BookModel"] = libro;
@@ -566,7 +566,7 @@ namespace Biblioteca.Controllers
 
         public ActionResult DeleteBook(int id)
         {
-            var libro = _context.Libros.Find(id);
+            var libro = db.Libros.Find(id);
             if (libro == null)
             {
                 TempData["AlertMessage"] = "Libro no encontrado.";
@@ -575,11 +575,11 @@ namespace Biblioteca.Controllers
             }
             try
             {
-                _context.Libros.Remove(libro);
-                _context.SaveChanges();
+                db.Libros.Remove(libro);
+                db.SaveChanges();
                 TempData["AlertMessage"] = "Libro eliminado correctamente.";
                 TempData["AlertType"] = "success";
-                return RedirectToAction("Libros", new { refresh = true }); // Forzar recarga
+                return RedirectToAction("Libros", new { refresh = true });
             }
             catch (Exception ex)
             {
@@ -589,111 +589,289 @@ namespace Biblioteca.Controllers
             }
         }
 
-        public ActionResult LendBook(int id)
+        [HttpGet]
+        public ActionResult LendBook(int id) // id = Libro.ID
         {
-            var libros = _context.Libros.Include(l => l.Categoria).ToList();
-            var libro = _context.Libros.Find(id);
-            if (libro == null || !libro.Estatus)
+            // Buscar un registro disponible en BibliotecaLibros
+            var bibliotecaLibro = db.BibliotecaLibros
+                .Include(bl => bl.Libro)
+                .FirstOrDefault(bl => bl.LibroID == id && bl.Libro.Estatus);
+
+            if (bibliotecaLibro == null)
             {
-                TempData["AlertMessage"] = "Libro no disponible para préstamo.";
+                TempData["AlertMessage"] = "Libro no disponible.";
                 TempData["AlertType"] = "error";
                 return RedirectToAction("Libros");
             }
-            var lend = new PrestamoLibro { BibliotecaLibroID = libro.ID, FechaPrestamo = ToUnixTimestamp(DateTime.Now) };
-            ViewBag.Usuarios = new SelectList(_context.Usuarios, "ID", "Nombre");
-            ViewBag.TipoPrestamos = new SelectList(_context.TipoPrestamos, "ID", "Nombre");
-            TempData["ShowModal"] = "true";
-            TempData["ModalTitle"] = "Prestar Libro";
-            TempData["LendModel"] = lend;
-            return View("Libros", libros);
+
+            // Redirigir a la vista de asignar préstamo con el ID correcto de BibliotecaLibro
+            return RedirectToAction("AssignLoan", new { id = bibliotecaLibro.ID });
         }
+
+
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LendBook(PrestamoLibro prestamo)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    var libros = _context.Libros.Include(l => l.Categoria).ToList();
-                    ViewBag.Usuarios = new SelectList(_context.Usuarios, "ID", "Nombre");
-                    ViewBag.TipoPrestamos = new SelectList(_context.TipoPrestamos, "ID", "Nombre");
-                    TempData["ShowModal"] = "true";
-                    TempData["ModalTitle"] = "Prestar Libro";
-                    TempData["LendModel"] = prestamo;
-                    return View("Libros", libros);
-                }
+            if (!ModelState.IsValid) return View("_PrestamoLibroForm", prestamo);
 
-                var libro = _context.Libros.Find(prestamo.BibliotecaLibroID);
-                if (libro == null || !libro.Estatus)
-                {
-                    TempData["AlertMessage"] = "Libro no disponible.";
-                    TempData["AlertType"] = "error";
-                    return RedirectToAction("Libros");
-                }
+            var bibliotecaLibro = db.BibliotecaLibros
+                .Include(bl => bl.Libro)
+                .FirstOrDefault(bl => bl.ID == prestamo.BibliotecaLibroID);
 
-                var tipoPrestamo = _context.TipoPrestamos.Find(prestamo.TipoPrestamoID);
-                prestamo.FechaEntrega = ToUnixTimestamp(DateTime.Now.AddDays(tipoPrestamo.Tiempo));
-                libro.Estatus = false;
-                _context.PrestamoLibros.Add(prestamo);
-                _context.SaveChanges();
-                TempData["AlertMessage"] = "Préstamo autorizado correctamente.";
-                TempData["AlertType"] = "success";
-                return RedirectToAction("Libros");
-            }
-            catch (Exception ex)
+            if (bibliotecaLibro == null || !bibliotecaLibro.Estatus)
             {
-                TempData["AlertMessage"] = $"Error al prestar el libro: {ex.Message}";
-                TempData["AlertType"] = "error";
-                var libros = _context.Libros.Include(l => l.Categoria).ToList();
-                ViewBag.Usuarios = new SelectList(_context.Usuarios, "ID", "Nombre");
-                ViewBag.TipoPrestamos = new SelectList(_context.TipoPrestamos, "ID", "Nombre");
-                TempData["ShowModal"] = "true";
-                TempData["ModalTitle"] = "Prestar Libro";
-                TempData["LendModel"] = prestamo;
-                return View("Libros", libros);
-            }
-        }
-
-        public ActionResult ReturnBook(int id)
-        {
-            var libro = _context.Libros.Find(id);
-            if (libro == null || libro.Estatus)
-            {
-                TempData["AlertMessage"] = "Libro no prestado.";
+                TempData["AlertMessage"] = "El libro ya está prestado o no existe.";
                 TempData["AlertType"] = "error";
                 return RedirectToAction("Libros");
             }
-            var prestamo = _context.PrestamoLibros.FirstOrDefault(p => p.BibliotecaLibroID == id && p.FechaEntregaReal == null);
-            if (prestamo == null)
+
+            var tipoPrestamo = db.TipoPrestamos.Find(prestamo.TipoPrestamoID);
+            if (tipoPrestamo == null)
             {
-                TempData["AlertMessage"] = "Préstamo no encontrado.";
+                TempData["AlertMessage"] = "Tipo de préstamo no válido.";
                 TempData["AlertType"] = "error";
                 return RedirectToAction("Libros");
             }
-            prestamo.FechaEntregaReal = ToUnixTimestamp(DateTime.Now);
-            prestamo.Multa = 0; // Lógica de multa aquí
-            libro.Estatus = true;
-            _context.SaveChanges();
-            TempData["AlertMessage"] = "Libro devuelto correctamente.";
+
+            prestamo.FechaPrestamo = ToUnixTimestamp(DateTime.Now);
+            prestamo.FechaEntrega = ToUnixTimestamp(DateTime.Now.AddDays(tipoPrestamo.Tiempo));
+            prestamo.FechaEntregaReal = 0;
+            prestamo.Multa = 0;
+            prestamo.Observacion = string.Empty;
+
+            db.PrestamoLibros.Add(prestamo);
+
+            // Marcar ejemplar como prestado
+            bibliotecaLibro.Estatus = false;
+            db.Entry(bibliotecaLibro).State = EntityState.Modified;
+
+            db.SaveChanges();
+
+            TempData["AlertMessage"] = "Libro prestado exitosamente.";
             TempData["AlertType"] = "success";
             return RedirectToAction("Libros");
         }
 
- 
+
+        [HttpGet]
+        public ActionResult AssignLoan(int id) // id = BibliotecaLibro.ID
+        {
+            ViewBag.Usuarios = new SelectList(db.Usuarios, "ID", "Nombre");
+            ViewBag.TipoPrestamos = new SelectList(db.TipoPrestamos, "ID", "Nombre");
+
+            var bibliotecaLibro = db.BibliotecaLibros
+                .Include(bl => bl.Libro)
+                .FirstOrDefault(bl => bl.ID == id);
+
+            if (bibliotecaLibro == null)
+            {
+                TempData["AlertMessage"] = "Libro no encontrado.";
+                TempData["AlertType"] = "error";
+                return RedirectToAction("Libros");
+            }
+
+            var model = new PrestamoLibro
+            {
+                BibliotecaLibroID = bibliotecaLibro.ID,
+                ClienteID = Session["UsuarioID"] != null ? (int)Session["UsuarioID"] : 0
+            };
+
+            return View("_PrestamoLibroForm", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AssignLoan(PrestamoLibro prestamo)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Usuarios = new SelectList(db.Usuarios, "ID", "Nombre", prestamo.UsuarioID);
+                ViewBag.TipoPrestamos = new SelectList(db.TipoPrestamos, "ID", "Nombre", prestamo.TipoPrestamoID);
+                return View("_PrestamoLibroForm", prestamo);
+            }
+
+            // 🔹 Buscar BibliotecaLibro disponible
+            var bibliotecaLibro = db.BibliotecaLibros
+                .Include(bl => bl.Libro)
+                .FirstOrDefault(bl => bl.ID == prestamo.BibliotecaLibroID);
+
+            if (bibliotecaLibro == null || bibliotecaLibro.Libro == null)
+            {
+                TempData["AlertMessage"] = "El libro no existe.";
+                TempData["AlertType"] = "error";
+                return RedirectToAction("Libros");
+            }
+
+            if (!bibliotecaLibro.Libro.Estatus)
+            {
+                TempData["AlertMessage"] = "El libro ya está prestado.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("Libros");
+            }
+
+            var tipoPrestamo = db.TipoPrestamos.Find(prestamo.TipoPrestamoID);
+            if (tipoPrestamo == null)
+            {
+                TempData["AlertMessage"] = "Tipo de préstamo no válido.";
+                TempData["AlertType"] = "error";
+                return RedirectToAction("Libros");
+            }
+
+            // 🔹 Registrar préstamo
+            prestamo.FechaPrestamo = ToUnixTimestamp(DateTime.Now);
+            prestamo.FechaEntrega = ToUnixTimestamp(DateTime.Now.AddDays(tipoPrestamo.Tiempo));
+            prestamo.FechaEntregaReal = 0;
+            prestamo.Multa = 0;
+            prestamo.Observacion = string.Empty;
+
+            db.PrestamoLibros.Add(prestamo);
+
+            // 🔹 Cambiar estado del libro a prestado
+            bibliotecaLibro.Libro.Estatus = false;
+            db.Entry(bibliotecaLibro.Libro).State = EntityState.Modified;
+
+            db.SaveChanges();
+
+            TempData["AlertMessage"] = "Libro prestado exitosamente.";
+            TempData["AlertType"] = "success";
+            return RedirectToAction("Libros");
+        }
+
+
+        [HttpGet]
+        public ActionResult ReturnBook(int id) // id = PrestamoLibro.ID
+        {
+            var prestamo = db.PrestamoLibros
+                .Include(p => p.BibliotecaLibro.Libro)
+                .FirstOrDefault(p => p.ID == id);
+
+            if (prestamo == null || prestamo.BibliotecaLibro == null)
+            {
+                TempData["AlertMessage"] = "Préstamo no encontrado.";
+                TempData["AlertType"] = "error";
+                return RedirectToAction("GestionPrestamos");
+            }
+
+            // Marcar como devuelto
+            prestamo.Devuelto = true;
+            prestamo.FechaEntregaReal = ToUnixTimestamp(DateTime.Now);
+
+            // Cambiar estado del libro a disponible
+            if (prestamo.BibliotecaLibro.Libro != null)
+            {
+                prestamo.BibliotecaLibro.Libro.Estatus = true;
+                db.Entry(prestamo.BibliotecaLibro.Libro).State = EntityState.Modified;
+            }
+
+            db.Entry(prestamo).State = EntityState.Modified;
+            db.SaveChanges();
+
+            TempData["AlertMessage"] = "Libro devuelto correctamente.";
+            TempData["AlertType"] = "success";
+            return RedirectToAction("GestionPrestamos");
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ReturnBook(PrestamoLibro prestamo)
+        {
+            // 🔹 Cargar préstamo con BibliotecaLibro y Libro
+            var prestamoDb = db.PrestamoLibros
+                .Include(p => p.BibliotecaLibro.Libro)
+                .FirstOrDefault(p => p.ID == prestamo.ID);
+
+            if (prestamoDb == null)
+            {
+                TempData["AlertMessage"] = "Préstamo no encontrado.";
+                TempData["AlertType"] = "error";
+                return RedirectToAction("GestionPrestamos");
+            }
+
+            if (prestamoDb.Devuelto)
+            {
+                TempData["AlertMessage"] = "El libro ya ha sido devuelto.";
+                TempData["AlertType"] = "warning";
+                return RedirectToAction("GestionPrestamos");
+            }
+
+            int ahora = ToUnixTimestamp(DateTime.Now);
+
+            // 🔹 Calcular multa si aplica
+            int tarifaMulta = 5;
+            int multa = 0;
+            string observacion = (Request.Form["Observacion"] ?? "").Trim();
+
+            if (ahora > prestamoDb.FechaEntrega)
+            {
+                int diasRetraso = (int)((ahora - prestamoDb.FechaEntrega) / 86400);
+                multa = diasRetraso * tarifaMulta;
+                observacion += $" Multa aplicada por {diasRetraso} día(s) de retraso.";
+            }
+
+            // 🔹 Actualizar préstamo
+            prestamoDb.Devuelto = true;
+            prestamoDb.FechaEntregaReal = ahora;
+            prestamoDb.Multa = multa;
+            prestamoDb.Observacion = observacion;
+
+            // 🔹 Marcar libro como disponible
+            if (prestamoDb.BibliotecaLibro?.Libro != null)
+            {
+                prestamoDb.BibliotecaLibro.Libro.Estatus = true;
+                db.Entry(prestamoDb.BibliotecaLibro.Libro).State = EntityState.Modified;
+            }
+
+            db.Entry(prestamoDb).State = EntityState.Modified;
+            db.SaveChanges();
+
+            TempData["AlertMessage"] = "Libro devuelto exitosamente.";
+            TempData["AlertType"] = "success";
+            return RedirectToAction("GestionPrestamos");
+        }
+
+
+
+        // ✅ Listado de préstamos activos y devueltos
+        public ActionResult GestionPrestamos()
+        {
+            var prestamosActivos = db.PrestamoLibros
+                .Include(p => p.BibliotecaLibro.Libro)
+                .Include(p => p.Usuario)
+                .Where(p => !p.Devuelto && p.BibliotecaLibro != null && p.BibliotecaLibro.Libro != null)
+                .ToList();
+
+
+            var prestamosDevueltos = db.PrestamoLibros
+                .Include(p => p.BibliotecaLibro.Libro)
+                .Include(p => p.Usuario)
+                .Where(p => p.Devuelto && p.BibliotecaLibro != null && p.BibliotecaLibro.Libro != null)
+                .ToList();
+
+
+            ViewBag.PrestamosActivos = prestamosActivos;
+            ViewBag.PrestamosDevueltos = prestamosDevueltos;
+
+            return View();
+        }
+
+
 
         private static int ToUnixTimestamp(DateTime dateTime)
         {
             return (int)(dateTime.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         }
 
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                _context.Dispose();
+                db.Dispose();
             }
             base.Dispose(disposing);
         }

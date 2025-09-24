@@ -140,6 +140,30 @@
     <Compile Include="Migrations\202509100056429_AnadirAutor.Designer.cs">
       <DependentUpon>202509100056429_AnadirAutor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202509182239274_NumeroAdquisicion.cs" />
+    <Compile Include="Migrations\202509182239274_NumeroAdquisicion.Designer.cs">
+      <DependentUpon>202509182239274_NumeroAdquisicion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509222112391_LibroView.cs" />
+    <Compile Include="Migrations\202509222112391_LibroView.Designer.cs">
+      <DependentUpon>202509222112391_LibroView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509230035483_QuitarModelo.cs" />
+    <Compile Include="Migrations\202509230035483_QuitarModelo.Designer.cs">
+      <DependentUpon>202509230035483_QuitarModelo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509232143175_CambioPrestamoLibro.cs" />
+    <Compile Include="Migrations\202509232143175_CambioPrestamoLibro.Designer.cs">
+      <DependentUpon>202509232143175_CambioPrestamoLibro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509232308052_Cambios.cs" />
+    <Compile Include="Migrations\202509232308052_Cambios.Designer.cs">
+      <DependentUpon>202509232308052_Cambios.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509240043532_CampoEstatusBibliotecaLibro.cs" />
+    <Compile Include="Migrations\202509240043532_CampoEstatusBibliotecaLibro.Designer.cs">
+      <DependentUpon>202509240043532_CampoEstatusBibliotecaLibro.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Administrador.cs" />
     <Compile Include="Models\Biblioteca.cs" />
@@ -254,11 +278,12 @@
     <Content Include="Scripts\jquery-3.7.1.min.map" />
     <Content Include="Views\Cliente\Index.cshtml" />
     <Content Include="Views\Cliente\Libros.cshtml" />
-    <Content Include="Views\Cliente\Prestamos.cshtml" />
     <Content Include="Views\Cliente\Usuarios.cshtml" />
     <Content Include="Views\Cliente\CrearUsuario.cshtml" />
     <Content Include="Views\Cliente\_UsuarioForm.cshtml" />
     <Content Include="Views\Cliente\_PrestamoLibroForm.cshtml" />
+    <Content Include="Views\Cliente\GestionPrestamos.cshtml" />
+    <Content Include="Views\Cliente\EditBook.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -279,6 +304,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509100056429_AnadirAutor.resx">
       <DependentUpon>202509100056429_AnadirAutor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509182239274_NumeroAdquisicion.resx">
+      <DependentUpon>202509182239274_NumeroAdquisicion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509222112391_LibroView.resx">
+      <DependentUpon>202509222112391_LibroView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509230035483_QuitarModelo.resx">
+      <DependentUpon>202509230035483_QuitarModelo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509232143175_CambioPrestamoLibro.resx">
+      <DependentUpon>202509232143175_CambioPrestamoLibro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509232308052_Cambios.resx">
+      <DependentUpon>202509232308052_Cambios.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509240043532_CampoEstatusBibliotecaLibro.resx">
+      <DependentUpon>202509240043532_CampoEstatusBibliotecaLibro.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

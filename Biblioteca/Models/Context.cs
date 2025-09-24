@@ -25,6 +25,7 @@ namespace Biblioteca.Models
         public DbSet<TipoPrestamo> TipoPrestamos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
+
     }
 
 }

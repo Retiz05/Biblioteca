@@ -16,7 +16,11 @@
         left: 0;
         width: 240px;
         height: 100%;
-        background-color: #2f3e4d;
+        background: linear-gradient(rgba(47, 62, 77, 0.3), rgba(47, 62, 77, 0.3)), url('https://cdn.pixabay.com/photo/2014/06/28/12/35/books-378903_640.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #2f3e4d; /* Fallback si la imagen falla */
         color: white;
         padding-top: 60px;
         transition: transform 0.3s ease;
@@ -27,22 +31,22 @@
         flex-direction: column;
     }
 
-        .sidebar.collapsed {
-            transform: translateX(-240px);
-        }
+    .sidebar.collapsed {
+        transform: translateX(-240px);
+    }
 
-        .sidebar a {
-            display: block;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.2s ease;
-        }
+    .sidebar a {
+        display: block;
+        color: white;
+        padding: 15px 30px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+    }
 
-            .sidebar a:hover {
-                background-color: #405768;
-            }
+    .sidebar a:hover {
+        background-color: rgba(64, 87, 104, 0.9); /* Ajustado para mayor contraste */
+    }
 
     #toggleBtn {
         position: fixed;
@@ -62,9 +66,9 @@
         border-bottom-right-radius: 10px;
     }
 
-        #toggleBtn:hover {
-            background-color: #34495e;
-        }
+    #toggleBtn:hover {
+        background-color: #34495e;
+    }
 
     .main {
         margin-left: 240px;
@@ -74,18 +78,18 @@
         background-color: white;
     }
 
-        .main.expanded {
-            margin-left: 0;
-        }
+    .main.expanded {
+        margin-left: 0;
+    }
 
     @@media (max-width: 768px) {
         .sidebar {
             transform: translateX(-240px);
         }
 
-            .sidebar.show {
-                transform: translateX(0);
-            }
+        .sidebar.show {
+            transform: translateX(0);
+        }
 
         #toggleBtn {
             left: 10px;
@@ -106,6 +110,7 @@
     <a href="@Url.Action("Index", "Cliente")">🏠 Inicio</a>
     <a href="@Url.Action("Usuarios", "Cliente")">👥 Usuarios</a>
     <a href="@Url.Action("Libros", "Cliente")">📚 Libros</a>
+    <a href="@Url.Action("GestionPrestamos", "Cliente")">📖 Gestión de Préstamos</a> <!-- <-- Nuevo enlace -->
     <a href="/Login">🚪 Cerrar Sesión</a>
 </div>
 
@@ -114,7 +119,6 @@
 <div id="mainContent" class="main">
     @RenderBody()
     @RenderSection("scripts", required: false)
-
 </div>
 
 <script>

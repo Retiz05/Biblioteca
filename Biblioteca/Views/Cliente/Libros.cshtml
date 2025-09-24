@@ -1,7 +1,8 @@
 ﻿@using Newtonsoft.Json
 @using Biblioteca.Models.ModelosDTO;
+@using Biblioteca.Models;
 
-@model IEnumerable<Biblioteca.Models.Libro>
+@model List<BibliotecaLibroViewModel>
 
 @{
     ViewBag.Title = "Lista de Libros";
@@ -11,13 +12,13 @@
     var modalTitle = TempData["ModalTitle"] as string;
     var alertMessage = TempData["AlertMessage"] as string;
     var alertType = TempData["AlertType"] as string;
-    var bookModel = TempData["BookModel"] as Biblioteca.Models.Libro;
+    var bookModel = TempData["BookModel"] as Libro;
 
     // 🔹 Deserializamos el DTO desde JSON
-    Biblioteca.Models.ModelosDTO.LibroInformacionDTO apiData = null;
+    LibroInformacionDTO apiData = null; // Declare at the top
     if (TempData["ApiDataJson"] != null)
     {
-        apiData = JsonConvert.DeserializeObject<Biblioteca.Models.ModelosDTO.LibroInformacionDTO>((string)TempData["ApiDataJson"]);
+        apiData = JsonConvert.DeserializeObject<LibroInformacionDTO>((string)TempData["ApiDataJson"]);
     }
 }
 
@@ -81,41 +82,46 @@
                     <th>Categoría</th>
                     <th>Autor(es)</th>
                     <th>Estatus</th>
+                    <th>Número de Adquisición</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @if (Model != null && Model.Any())
                 {
-                    foreach (var libro in Model)
+                    foreach (var item in Model)
                     {
                         <tr>
-                            <td>@libro.ISBN</td>
-                            <td>@libro.Materia</td>
-                            <td>@libro.NumeroEjemplar</td>
-                            <td>@(libro.Categoria != null ? libro.Categoria.Nombre : "Sin categoría")</td>
-                            <td>@(string.IsNullOrEmpty(libro.Autor) ? "Desconocido" : libro.Autor)</td>
-                            <td class="@(libro.Estatus ? "status-available" : "status-lent")">
-                                @(libro.Estatus ? "Disponible" : "Prestado")
+                            <td>@item.ISBN</td>
+                            <td>@item.Materia</td>
+                            <td>@item.NumeroEjemplar</td>
+                            <td>@item.CategoriaNombre</td>
+                            <td>@(string.IsNullOrEmpty(item.Autor) ? "Desconocido" : item.Autor)</td>
+                            <td class="@(item.Estatus ? "status-available" : "status-lent")">
+                                @(item.Estatus ? "Disponible" : "Prestado")
                             </td>
+                            <td>@item.NumeroAdquisicion</td>
                             <td>
-                                <a href="@Url.Action("EditBook", "Cliente", new { id = libro.ID })" class="btn btn-warning btn-sm btn-custom">
+                                <a href="@Url.Action("EditBook", "Cliente", new { id = item.ID })" class="btn btn-warning btn-sm btn-custom">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
-                                <a href="@Url.Action("DeleteBook", "Cliente", new { id = libro.ID })" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('¿Eliminar este libro?');">
+                                <a href="@Url.Action("DeleteBook", "Cliente", new { id = item.ID })" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('¿Eliminar este libro?');">
                                     <i class="fas fa-trash"></i> Eliminar
                                 </a>
-                                @if (libro.Estatus)
+                                @if (item.Estatus)
                                 {
-                                    <a href="@Url.Action("LendBook", "Cliente", new { id = libro.ID })" class="btn btn-success btn-sm btn-custom">
+                                    <a href="@Url.Action("LendBook", "Cliente", new { id = item.ID })" class="btn btn-success btn-sm btn-custom">
                                         <i class="fas fa-handshake"></i> Prestar
                                     </a>
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("ReturnBook", "Cliente", new { id = libro.ID })" class="btn btn-info btn-sm btn-custom">
-                                        <i class="fas fa-undo"></i> Devolver
-                                    </a>
+                                    if (item.PrestamoActivoId.HasValue)
+                                    {
+                                        <a href="@Url.Action("ReturnBook", "Cliente", new { id = item.PrestamoActivoId })" class="btn btn-info btn-sm btn-custom">
+                                            <i class="fas fa-undo"></i> Devolver
+                                        </a>
+                                    }
                                 }
                             </td>
                         </tr>
@@ -124,7 +130,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-center">No hay libros disponibles.</td>
+                        <td colspan="8" class="text-center">No hay libros disponibles.</td>
                     </tr>
                 }
             </tbody>
@@ -139,7 +145,7 @@
                 {
                     @Html.AntiForgeryToken()
                     <div class="modal-header">
-                        <h5 class="modal-title">@ViewBag.ModalTitle Agregar Libro</h5>
+                        <h5 class="modal-title">@(modalTitle ?? "Agregar Libro")</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
 
@@ -221,7 +227,7 @@
                    {
                        try
                        {
-                           var bookData = JsonConvert.DeserializeObject<LibroInformacionDTO>(apiDataStr); // Renombrado a bookData
+                           var bookData = JsonConvert.DeserializeObject<LibroInformacionDTO>(apiDataStr);
                            @(bookData?.AnioPrimeraPublicacion ?? DateTime.Now.Year)
                        }
                        catch
@@ -233,8 +239,7 @@
                    {
                        @DateTime.Now.Year
                    }
-               }"
-                                           min="1900" max="@DateTime.Now.Year" />
+               }" min="1900" max="@DateTime.Now.Year" />
                                 </div>
                             </div>
 
@@ -242,7 +247,7 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="Cantidad">Cantidad de Ejemplares</label>
-                                    <input type="number" id="Cantidad" name="CantidadEjemplares" class="form-control" value="1" min="1" required oninput="actualizarClasificacion()" />
+                                    <input type="number" id="Cantidad" name="CantidadEjemplares" class="form-control" value="1" min="1" required oninput="actualizarClasificacion(); updateNumeroAdquisicion()" />
                                     <small class="text-muted">Si agregas más de 1, se crearán ejemplares secuenciales.</small>
                                 </div>
                             </div>
@@ -251,8 +256,8 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="NumeroAdquisicion">Número de Adquisición</label>
-                                    <input type="number" id="NumeroAdquisicion" name="NumeroAdquisicion" class="form-control" min="1" required />
-                                    <small class="text-muted">Número único para identificar la adquisición del libro.</small>
+                                    <input type="number" id="NumeroAdquisicion" name="NumeroAdquisicion" class="form-control" min="1" required readonly />
+                                    <small class="text-muted">Se generará automáticamente.</small>
                                 </div>
                             </div>
 
@@ -278,7 +283,6 @@
 
 @section Scripts {
     <script>
-        // Buscar en API
         document.getElementById("buscarApiBtn").addEventListener("click", function (e) {
             e.preventDefault();
             var isbn = document.getElementById("ISBN").value;
@@ -300,6 +304,13 @@
             }
 
             document.getElementById("Clasificacion").value = clasificacion.trim();
+        }
+
+        function updateNumeroAdquisicion() {
+            var cantidad = parseInt(document.getElementById("Cantidad").value) || 1;
+            var lastNumeroAdquisicion = @(((int?)ViewBag.LastNumeroAdquisicion).Value); // Asegúrate de manejar null
+            var baseNumero = lastNumeroAdquisicion + 1;
+            document.getElementById("NumeroAdquisicion").value = baseNumero;
         }
 
         document.getElementById("CategoriaID")?.addEventListener("change", function () {
@@ -328,19 +339,21 @@
 
         document.getElementById("CategoriaID")?.addEventListener("change", actualizarClasificacion);
         document.getElementById("TemaID")?.addEventListener("change", actualizarClasificacion);
-        document.getElementById("Cantidad")?.addEventListener("input", actualizarClasificacion);
+        document.getElementById("Cantidad")?.addEventListener("input", function () {
+            actualizarClasificacion();
+            updateNumeroAdquisicion();
+        });
 
-        // Reabrir modal después de SearchApi
         @if (showModal == "true")
         {
             <text>
                 var modal = new bootstrap.Modal(document.getElementById('libroModal'));
                 modal.show();
                 actualizarClasificacion();
+                updateNumeroAdquisicion();
             </text>
         }
 
-        // SweetAlert
         @if (!string.IsNullOrEmpty(alertMessage))
         {
             <text>

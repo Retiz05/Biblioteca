@@ -1,22 +1,34 @@
 ﻿@model Biblioteca.Models.PrestamoLibro
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "lendForm" }))
+@{
+    ViewBag.Title = "Asignar Préstamo";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<h2>Asignar Préstamo</h2>
+
+@using (Html.BeginForm("AssignLoan", "Cliente", FormMethod.Post, new { id = "lendForm" }))
 {
     @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.ID)
-    @Html.HiddenFor(m => m.BibliotecaLibroID)
+    @Html.HiddenFor(m => m.ID) <!-- Opcional, solo si se edita -->
+    @Html.HiddenFor(m => m.ClienteID) <!-- Ocultar el ClienteID del bibliotecario -->
+    @Html.HiddenFor(m => m.BibliotecaLibroID) <!-- Ocultar el libro seleccionado -->
     <div class="form-group">
-        @Html.LabelFor(m => m.UsuarioPrestamoID, "Usuario")
-        @Html.DropDownListFor(m => m.UsuarioPrestamoID, new SelectList(ViewBag.Usuarios, "ID", "Nombre"), "Seleccione un usuario", new { @class = "form-control", required = "required" })
-        @Html.ValidationMessageFor(m => m.UsuarioPrestamoID, "", new { @class = "error-message" })
+        @Html.LabelFor(m => m.UsuarioID, "Usuario")
+        @Html.DropDownListFor(m => m.UsuarioID, (IEnumerable<SelectListItem>)ViewBag.Usuarios, "Seleccione un usuario", new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.UsuarioID, "", new { @class = "error-message" })
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.TipoPrestamoID, "Tipo de Préstamo")
-        @Html.DropDownListFor(m => m.TipoPrestamoID, new SelectList(ViewBag.TipoPrestamos, "ID", "Nombre"), "Seleccione un tipo", new { @class = "form-control", required = "required" })
+        @Html.DropDownListFor(m => m.TipoPrestamoID, (IEnumerable<SelectListItem>)ViewBag.TipoPrestamos, "Seleccione un tipo", new { @class = "form-control", required = "required" })
         @Html.ValidationMessageFor(m => m.TipoPrestamoID, "", new { @class = "error-message" })
     </div>
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Prestar</button>
+        <button type="submit" class="btn btn-primary">Asignar</button>
         <a href="@Url.Action("Libros", "Cliente")" class="btn btn-secondary">Cancelar</a>
     </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 }
