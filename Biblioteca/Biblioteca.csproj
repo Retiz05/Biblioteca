@@ -164,6 +164,10 @@
     <Compile Include="Migrations\202509240043532_CampoEstatusBibliotecaLibro.Designer.cs">
       <DependentUpon>202509240043532_CampoEstatusBibliotecaLibro.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202509242248436_RemoveMateriaFromLibro.cs" />
+    <Compile Include="Migrations\202509242248436_RemoveMateriaFromLibro.Designer.cs">
+      <DependentUpon>202509242248436_RemoveMateriaFromLibro.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Administrador.cs" />
     <Compile Include="Models\Biblioteca.cs" />
@@ -322,6 +326,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509240043532_CampoEstatusBibliotecaLibro.resx">
       <DependentUpon>202509240043532_CampoEstatusBibliotecaLibro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509242248436_RemoveMateriaFromLibro.resx">
+      <DependentUpon>202509242248436_RemoveMateriaFromLibro.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

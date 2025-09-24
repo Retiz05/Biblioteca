@@ -6,10 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Biblioteca.Controllers
@@ -30,7 +28,6 @@ namespace Biblioteca.Controllers
                 LibrosEstado = libros.Select(l => new LibroEstadoDTO
                 {
                     ISBN = l.ISBN,
-                    Materia = l.Materia,
                     NumeroEjemplar = l.NumeroEjemplar,
                     Estatus = l.Estatus
                 }).ToList(),
@@ -41,7 +38,10 @@ namespace Biblioteca.Controllers
 
             ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
             ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
-            ViewBag.LastNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
+            ViewBag.LastNumeroAdquisicion = db.Libros
+                .Select(l => l.NumeroAdquisicion)
+                .DefaultIfEmpty(0)
+                .Max();
 
             return View(viewModel);
         }
@@ -252,11 +252,10 @@ namespace Biblioteca.Controllers
                 .Include(l => l.Categoria)
                 .ToList();
 
-            var viewModels = libros.Select(l => new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel
+            var viewModels = libros.Select(l => new BibliotecaLibroViewModel
             {
                 ID = l.ID,
                 ISBN = l.ISBN,
-                Materia = l.Materia,
                 NumeroEjemplar = l.NumeroEjemplar,
                 Clasificacion = l.Clasificacion,
                 Estatus = l.Estatus,
@@ -271,7 +270,10 @@ namespace Biblioteca.Controllers
             ViewBag.LibrosPrestados = viewModels.Count(vm => !vm.Estatus);
             ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
             ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
-            ViewBag.LastNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
+            ViewBag.LastNumeroAdquisicion = db.Libros
+                .Select(l => l.NumeroAdquisicion)
+                .DefaultIfEmpty(0)
+                .Max();
 
             return View(viewModels);
         }
@@ -301,30 +303,34 @@ namespace Biblioteca.Controllers
                         .Select(c => c.Name).ToList() ?? new List<string> { "Desconocido" };
                 }
 
+                if (string.IsNullOrEmpty(bookData.Imagen) && bookData.CoverId.HasValue)
+                {
+                    bookData.Imagen = $"http://covers.openlibrary.org/b/id/{bookData.CoverId}-M.jpg";
+                }
+                else if (string.IsNullOrEmpty(bookData.Imagen))
+                {
+                    bookData.Imagen = "/Content/images/default-book-cover.jpg";
+                }
+
+                Debug.WriteLine($"Respuesta API - ISBN: {ISBN}, Imagen: {bookData.Imagen ?? "No disponible"}");
+
                 int ultimoEjemplar = db.Libros
                     .Where(l => l.ISBN == ISBN)
-                    .OrderByDescending(l => l.NumeroEjemplar)
                     .Select(l => l.NumeroEjemplar)
-                    .FirstOrDefault();
-
-                var materia = !string.IsNullOrEmpty(bookData.Subtitulo) ? bookData.Subtitulo : bookData.Titulo;
-
-                List<string> autores = bookData.NombresAutor != null && bookData.NombresAutor.Any()
-                    ? bookData.NombresAutor
-                    : new List<string> { "Desconocido" };
+                    .DefaultIfEmpty(0)
+                    .Max();
 
                 var libro = new Libro
                 {
                     ISBN = ISBN,
-                    Materia = !string.IsNullOrEmpty(bookData.Subtitulo)
-                        ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(bookData.Subtitulo.ToLower())
-                        : bookData.Titulo,
                     NumeroEjemplar = ultimoEjemplar + 1,
-                    Autor = string.Join(", ", autores)
+                    Autor = string.Join(", ", bookData.NombresAutor),
+                    NumeroAdquisicion = db.Libros
+                        .Where(l => l.ISBN == ISBN)
+                        .Select(l => l.NumeroAdquisicion)
+                        .DefaultIfEmpty(0)
+                        .Max() + 1
                 };
-
-                // Registrar los datos del autor para depuración
-                Debug.WriteLine($"Respuesta API - ISBN: {ISBN}, Autores: {string.Join(", ", autores)}");
 
                 var serialized = JsonConvert.SerializeObject(bookData);
                 ViewData["ApiData"] = serialized;
@@ -355,7 +361,6 @@ namespace Biblioteca.Controllers
             {
                 ID = l.ID,
                 ISBN = l.ISBN,
-                Materia = l.Materia,
                 NumeroEjemplar = l.NumeroEjemplar,
                 Clasificacion = l.Clasificacion,
                 Estatus = l.Estatus,
@@ -367,10 +372,11 @@ namespace Biblioteca.Controllers
 
             ViewBag.Categorias = new SelectList(db.Categorias, "ID", "Nombre");
             ViewBag.Temas = new SelectList(db.Temas, "ID", "Nombre");
-            ViewBag.TotalLibros = viewModels.Count;
-            ViewBag.LibrosDisponibles = viewModels.Count(vm => vm.Estatus);
-            ViewBag.LibrosPrestados = viewModels.Count(vm => !vm.Estatus);
-            ViewBag.LastNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
+            ViewBag.LastNumeroAdquisicion = db.Libros
+                .Where(l => l.ISBN == ISBN)
+                .Select(l => l.NumeroAdquisicion)
+                .DefaultIfEmpty(0)
+                .Max();
 
             return View("Libros", viewModels);
         }
@@ -407,9 +413,13 @@ namespace Biblioteca.Controllers
                     .DefaultIfEmpty(0)
                     .Max();
 
-                int baseNumeroAdquisicion = db.Libros.Max(l => (int?)l.NumeroAdquisicion) ?? 0;
+                int baseNumeroAdquisicion = db.Libros
+                    .Where(l => l.ISBN == libro.ISBN)
+                    .Select(l => l.NumeroAdquisicion)
+                    .DefaultIfEmpty(0)
+                    .Max();
 
-                string autoresStr = Autor ?? "Desconocido"; // Usa el autor del formulario si está disponible
+                string autoresStr = Autor ?? "Desconocido";
                 if (TempData["ApiDataJson"] != null)
                 {
                     var apiData = JsonConvert.DeserializeObject<LibroInformacionDTO>((string)TempData["ApiDataJson"]);
@@ -419,17 +429,18 @@ namespace Biblioteca.Controllers
                     }
                 }
 
+                string temaNombre = TemaID > 0 ? db.Temas.FirstOrDefault(t => t.ID == TemaID)?.Nombre : null;
+
                 for (int i = 1; i <= CantidadEjemplares; i++)
                 {
                     var newLibro = new Libro
                     {
                         ISBN = libro.ISBN,
-                        Materia = libro.Materia,
                         NumeroEjemplar = ultimoEjemplar + i,
-                        Clasificacion = libro.Clasificacion ?? GenerateClasificacion(libro, ultimoEjemplar + i),
+                        Clasificacion = libro.Clasificacion ?? GenerateClasificacion(libro, ultimoEjemplar + i, temaNombre: temaNombre),
                         Estatus = true,
                         CategoriaID = libro.CategoriaID,
-                        Autor = autoresStr, // Asegura que el autor se establezca
+                        Autor = autoresStr,
                         NumeroAdquisicion = baseNumeroAdquisicion + i
                     };
                     db.Libros.Add(newLibro);
@@ -463,7 +474,7 @@ namespace Biblioteca.Controllers
             var categoriaClave = db.Categorias.FirstOrDefault(c => c.ID == libro.CategoriaID)?.Clave ?? "000";
             var tema = !string.IsNullOrEmpty(temaNombre)
                 ? (temaNombre.Length >= 3 ? temaNombre.Substring(0, 3) : temaNombre)
-                : (!string.IsNullOrEmpty(libro.Materia) ? (libro.Materia.Length >= 3 ? libro.Materia.Substring(0, 3) : libro.Materia) : "GEN");
+                : "GEN";
             if (anio == 0) anio = DateTime.Now.Year;
             return $"{categoriaClave} - {tema} - {anio} - {ejemplar}";
         }
@@ -480,6 +491,17 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetLastNumeroAdquisicionByISBN(string isbn)
+        {
+            var lastNumeroAdquisicion = db.Libros
+                .Where(l => l.ISBN == isbn)
+                .Select(l => l.NumeroAdquisicion)
+                .DefaultIfEmpty(0)
+                .Max();
+            return Json(new { lastNumeroAdquisicion }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
         public ActionResult EditBook(int id)
         {
             var libro = db.Libros.Find(id);
@@ -490,11 +512,10 @@ namespace Biblioteca.Controllers
                 return RedirectToAction("Libros");
             }
 
-            var viewModel = new Biblioteca.Models.ModelosDTO.BibliotecaLibroViewModel
+            var viewModel = new BibliotecaLibroViewModel
             {
                 ID = libro.ID,
                 ISBN = libro.ISBN,
-                Materia = libro.Materia,
                 NumeroEjemplar = libro.NumeroEjemplar,
                 Clasificacion = libro.Clasificacion,
                 Estatus = libro.Estatus,
@@ -535,11 +556,12 @@ namespace Biblioteca.Controllers
                 }
 
                 existingLibro.ISBN = libro.ISBN;
-                existingLibro.Materia = libro.Materia;
                 existingLibro.NumeroEjemplar = libro.NumeroEjemplar;
                 existingLibro.Clasificacion = libro.Clasificacion;
                 existingLibro.CategoriaID = libro.CategoriaID;
                 existingLibro.Estatus = libro.Estatus;
+                existingLibro.Autor = libro.Autor;
+                existingLibro.NumeroAdquisicion = libro.NumeroAdquisicion;
 
                 db.Entry(existingLibro).State = EntityState.Modified;
                 db.SaveChanges();
@@ -730,6 +752,8 @@ namespace Biblioteca.Controllers
         {
             var prestamo = db.PrestamoLibros
                 .Include(p => p.BibliotecaLibro.Libro)
+                .Include(p => p.BibliotecaLibro.Libro.Categoria)
+                .Include(p => p.Usuario)
                 .FirstOrDefault(p => p.ID == id);
 
             if (prestamo == null || prestamo.BibliotecaLibro == null)
@@ -762,6 +786,8 @@ namespace Biblioteca.Controllers
         {
             var prestamoDb = db.PrestamoLibros
                 .Include(p => p.BibliotecaLibro.Libro)
+                .Include(p => p.BibliotecaLibro.Libro.Categoria)
+                .Include(p => p.Usuario)
                 .FirstOrDefault(p => p.ID == prestamo.ID);
 
             if (prestamoDb == null)
@@ -813,12 +839,14 @@ namespace Biblioteca.Controllers
         {
             var prestamosActivos = db.PrestamoLibros
                 .Include(p => p.BibliotecaLibro.Libro)
+                .Include(p => p.BibliotecaLibro.Libro.Categoria)
                 .Include(p => p.Usuario)
                 .Where(p => !p.Devuelto && p.BibliotecaLibro != null && p.BibliotecaLibro.Libro != null)
                 .ToList();
 
             var prestamosDevueltos = db.PrestamoLibros
                 .Include(p => p.BibliotecaLibro.Libro)
+                .Include(p => p.BibliotecaLibro.Libro.Categoria)
                 .Include(p => p.Usuario)
                 .Where(p => p.Devuelto && p.BibliotecaLibro != null && p.BibliotecaLibro.Libro != null)
                 .ToList();

@@ -1,10 +1,36 @@
-﻿@model IEnumerable<Biblioteca.Models.PrestamoLibro>
+﻿@using Biblioteca.Models
+@model IEnumerable<PrestamoLibro>
+
 @{
     ViewBag.Title = "Gestión de Préstamos";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    .table-container {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-active {
+        color: #ffffff !important; /* White text for high contrast */
+    }
+
+    .status-returned {
+        color: #ffffff !important; /* White text for high contrast */
+    }
+
+    .btn-custom {
+        margin-right: 5px;
+    }
+</style>
 
 <div class="container-fluid mt-3">
     <h2 class="mb-4">Gestión de Préstamos</h2>
@@ -12,89 +38,94 @@
     <div class="row">
         <div class="col-12 mb-5">
             <h4>Préstamos Activos</h4>
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Libro</th>
-                        <th>Usuario</th>
-                        <th>Fecha Préstamo</th>
-                        <th>Fecha Entrega</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (ViewBag.PrestamosActivos != null && ((List<Biblioteca.Models.PrestamoLibro>)ViewBag.PrestamosActivos).Any())
-                    {
-                        foreach (var p in (List<Biblioteca.Models.PrestamoLibro>)ViewBag.PrestamosActivos)
+            <div class="table-container">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Libro</th>
+                            <th>Usuario</th>
+                            <th>Fecha Préstamo</th>
+                            <th>Fecha Entrega</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.PrestamosActivos != null && ((List<PrestamoLibro>)ViewBag.PrestamosActivos).Any())
+                        {
+                            foreach (var p in (List<PrestamoLibro>)ViewBag.PrestamosActivos)
+                            {
+                                <tr>
+                                    <td>@(p.BibliotecaLibro.Libro.ISBN ?? "N/A")</td>
+                                    <td>@(p.Usuario?.Nombre ?? "Desconocido")</td>
+                                    <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaPrestamo).ToString("dd/MM/yyyy"))</td>
+                                    <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaEntrega).ToString("dd/MM/yyyy"))</td>
+                                    <td>
+                                        <span class="badge bg-warning status-active">Activo</span>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ReturnBook", "Cliente", new { id = p.ID })" class="btn btn-info btn-sm btn-custom">
+                                            <i class="fas fa-undo"></i> Devolver
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-                                <td>@p.BibliotecaLibro.Libro.ISBN - @p.BibliotecaLibro.Libro.Materia</td>
-                                <td>@p.Usuario.Nombre</td>
-                                <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaPrestamo).ToString("dd/MM/yyyy"))</td>
-                                <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaEntrega).ToString("dd/MM/yyyy"))</td>
-                                <td>
-                                    <span class="badge bg-warning">Activo</span>
-                                </td>
-                                <td>
-                                    <a href="@Url.Action("ReturnBook", "Cliente", new { id = p.ID })" class="btn btn-info btn-sm">
-                                        <i class="fas fa-undo"></i> Devolver
-                                    </a>
-                                </td>
+                                <td colspan="6" class="text-center">No hay préstamos activos.</td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="6" class="text-center">No hay préstamos activos.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="col-12">
             <h4>Préstamos Devueltos</h4>
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Libro</th>
-                        <th>Usuario</th>
-                        <th>Fecha Préstamo</th>
-                        <th>Fecha Entrega</th>
-                        <th>Fecha Entrega Real</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (ViewBag.PrestamosDevueltos != null && ((List<Biblioteca.Models.PrestamoLibro>)ViewBag.PrestamosDevueltos).Any())
-                    {
-                        foreach (var p in (List<Biblioteca.Models.PrestamoLibro>)ViewBag.PrestamosDevueltos)
+            <div class="table-container">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Libro</th>
+                            <th>Usuario</th>
+                            <th>Fecha Préstamo</th>
+                            <th>Fecha Entrega</th>
+                            <th>Fecha Entrega Real</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.PrestamosDevueltos != null && ((List<PrestamoLibro>)ViewBag.PrestamosDevueltos).Any())
+                        {
+                            foreach (var p in (List<PrestamoLibro>)ViewBag.PrestamosDevueltos)
+                            {
+                                <tr>
+                                    <td>@(p.BibliotecaLibro.Libro.ISBN ?? "N/A")</td>
+                                    <td>@(p.Usuario?.Nombre ?? "Desconocido")</td>
+                                    <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaPrestamo).ToString("dd/MM/yyyy"))</td>
+                                    <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaEntrega).ToString("dd/MM/yyyy"))</td>
+                                    <td>
+                                        @(p.FechaEntregaReal.HasValue && p.FechaEntregaReal.Value > 0
+                                            ? DateTimeOffset.FromUnixTimeSeconds(p.FechaEntregaReal.Value).ToString("dd/MM/yyyy")
+                                            : "-")
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success status-returned">Devuelto</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-                                <td>@p.BibliotecaLibro.Libro.ISBN - @p.BibliotecaLibro.Libro.Materia</td>
-                                <td>@p.Usuario.Nombre</td>
-                                <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaPrestamo).ToString("dd/MM/yyyy"))</td>
-                                <td>@(DateTimeOffset.FromUnixTimeSeconds(p.FechaEntrega).ToString("dd/MM/yyyy"))</td>
-                                @(p.FechaEntregaReal.HasValue
-                                ? DateTimeOffset.FromUnixTimeSeconds(p.FechaEntregaReal.Value).ToString("dd/MM/yyyy")
-                                : "-")
-
-                                <td>
-                                    <span class="badge bg-success">Devuelto</span>
-                                </td>
+                                <td colspan="6" class="text-center">No hay préstamos devueltos.</td>
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="6" class="text-center">No hay préstamos devueltos.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

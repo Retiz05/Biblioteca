@@ -1,6 +1,6 @@
 ﻿@using Newtonsoft.Json
-@using Biblioteca.Models.ModelosDTO;
-@using Biblioteca.Models;
+@using Biblioteca.Models.ModelosDTO
+@using Biblioteca.Models
 
 @model List<BibliotecaLibroViewModel>
 
@@ -14,7 +14,6 @@
     var alertType = TempData["AlertType"] as string;
     var bookModel = TempData["BookModel"] as Libro;
 
-    // Deserializamos el DTO desde JSON
     LibroInformacionDTO apiData = null;
     if (TempData["ApiDataJson"] != null)
     {
@@ -77,7 +76,6 @@
             <thead class="table-dark">
                 <tr>
                     <th>ISBN</th>
-                    <th>Materia</th>
                     <th>Ejemplar</th>
                     <th>Categoría</th>
                     <th>Autor(es)</th>
@@ -93,7 +91,6 @@
                     {
                         <tr>
                             <td>@item.ISBN</td>
-                            <td>@item.Materia</td>
                             <td>@item.NumeroEjemplar</td>
                             <td>@item.CategoriaNombre</td>
                             <td>@(string.IsNullOrEmpty(item.Autor) ? "Desconocido" : item.Autor)</td>
@@ -130,7 +127,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="8" class="text-center">No hay libros disponibles.</td>
+                        <td colspan="7" class="text-center">No hay libros disponibles.</td>
                     </tr>
                 }
             </tbody>
@@ -151,7 +148,6 @@
 
                     <div class="modal-body">
                         <div class="row g-3">
-
                             <!-- ISBN + Buscar -->
                             <div class="col-12">
                                 <div class="form-group">
@@ -177,26 +173,19 @@
                                     </div>
                                     <div class="col-12 text-center">
                                         <img src="@(string.IsNullOrEmpty(apiData.Imagen) ? "/Content/images/default-book-cover.jpg" : apiData.Imagen)"
-                                             alt="Portada" class="img-fluid rounded shadow" style="max-height: 250px;" />
+                                             alt="Portada" class="img-fluid rounded shadow" style="max-height: 250px;" onerror="this.src='/Content/images/default-book-cover.jpg';" />
                                     </div>
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label>Autores</label>
                                             <input type="text" class="form-control"
                                                    value="@((apiData.NombresAutor != null && apiData.NombresAutor.Any())
-                           ? string.Join(", ", apiData.NombresAutor)
-                           : "Desconocido")" readonly />
+                                                       ? string.Join(", ", apiData.NombresAutor)
+                                                       : "Desconocido")" readonly />
                                             <input type="hidden" name="Autor"
                                                    value="@((apiData.NombresAutor != null && apiData.NombresAutor.Any())
-                           ? string.Join(", ", apiData.NombresAutor)
-                           : "Desconocido")" />
-                                        </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label>Materia</label>
-                                            <input type="text" id="Materia" name="Materia" class="form-control"
-                                                   value="@(bookModel?.Materia ?? apiData?.Subtitulo ?? apiData?.Titulo ?? "")" required />
+                                                       ? string.Join(", ", apiData.NombresAutor)
+                                                       : "Desconocido")" />
                                         </div>
                                     </div>
                                 </div>
@@ -211,6 +200,7 @@
                                 </div>
                             </div>
 
+                            <!-- Tema -->
                             <div class="col-12">
                                 <div class="form-group">
                                     <label>Tema</label>
@@ -218,30 +208,30 @@
                                 </div>
                             </div>
 
-                            <!-- Año (solo para mostrar, no se guarda) -->
+                            <!-- Año -->
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="Anio">Año</label>
                                     <input type="number" id="Anio" name="Anio" class="form-control" readonly
                                            value="@{
-                   var apiDataStr = ViewData["ApiData"] as string;
-                   if (apiDataStr != null)
-                   {
-                       try
-                       {
-                           var bookData = JsonConvert.DeserializeObject<LibroInformacionDTO>(apiDataStr);
-                           @(bookData?.AnioPrimeraPublicacion ?? DateTime.Now.Year)
-                       }
-                       catch
-                       {
-                           @DateTime.Now.Year
-                       }
-                   }
-                   else
-                   {
-                       @DateTime.Now.Year
-                   }
-               }" min="1900" max="@DateTime.Now.Year" />
+                                               var apiDataStr = ViewData["ApiData"] as string;
+                                               if (apiDataStr != null)
+                                               {
+                                                   try
+                                                   {
+                                                       var bookData = JsonConvert.DeserializeObject<LibroInformacionDTO>(apiDataStr);
+                                                       @(bookData?.AnioPrimeraPublicacion ?? DateTime.Now.Year)
+                                                   }
+                                                   catch
+                                                   {
+                                                       @DateTime.Now.Year
+                                                   }
+                                               }
+                                               else
+                                               {
+                                                   @DateTime.Now.Year
+                                               }
+                                           }" min="1900" max="@DateTime.Now.Year" />
                                 </div>
                             </div>
 
@@ -259,7 +249,7 @@
                                 <div class="form-group">
                                     <label for="NumeroAdquisicion">Número de Adquisición</label>
                                     <input type="number" id="NumeroAdquisicion" name="NumeroAdquisicion" class="form-control" min="1" required readonly />
-                                    <small class="text-muted">Se generará automáticamente.</small>
+                                    <small class="text-muted">Se generará automáticamente según el ISBN.</small>
                                 </div>
                             </div>
 
@@ -285,10 +275,20 @@
 
 @section Scripts {
     <script>
-        document.getElementById("buscarApiBtn").addEventListener("click", function (e) {
+        document.getElementById("buscarApiBtn")?.addEventListener("click", function (e) {
             e.preventDefault();
             var isbn = document.getElementById("ISBN").value;
-            if (!isbn) { alert("Ingrese un ISBN válido"); return; }
+            if (!isbn) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Advertencia',
+                    text: 'Ingrese un ISBN válido',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+                return;
+            }
             window.location.href = '@Url.Action("SearchApi", "Cliente")' + '?ISBN=' + encodeURIComponent(isbn);
         });
 
@@ -309,10 +309,22 @@
         }
 
         function updateNumeroAdquisicion() {
-            var cantidad = parseInt(document.getElementById("Cantidad").value) || 1;
-            var lastNumeroAdquisicion = @(((int?)ViewBag.LastNumeroAdquisicion).Value);
-            var baseNumero = lastNumeroAdquisicion + 1;
-            document.getElementById("NumeroAdquisicion").value = baseNumero;
+            var isbn = document.getElementById("ISBN").value;
+            if (!isbn) {
+                document.getElementById("NumeroAdquisicion").value = 1;
+                return;
+            }
+
+            fetch('@Url.Action("GetLastNumeroAdquisicionByISBN", "Cliente")' + '?isbn=' + encodeURIComponent(isbn))
+                .then(response => response.json())
+                .then(data => {
+                    var baseNumero = data.lastNumeroAdquisicion + 1;
+                    document.getElementById("NumeroAdquisicion").value = baseNumero;
+                })
+                .catch(err => {
+                    console.error("Error obteniendo número de adquisición:", err);
+                    document.getElementById("NumeroAdquisicion").value = 1;
+                });
         }
 
         document.getElementById("CategoriaID")?.addEventListener("change", function () {
@@ -345,6 +357,7 @@
             actualizarClasificacion();
             updateNumeroAdquisicion();
         });
+        document.getElementById("ISBN")?.addEventListener("input", updateNumeroAdquisicion);
 
         @if (showModal == "true")
         {

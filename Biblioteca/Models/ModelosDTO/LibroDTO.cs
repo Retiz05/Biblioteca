@@ -81,7 +81,6 @@ namespace Biblioteca.Models.ModelosDTO
     public class LibroEstadoDTO
     {
         public string ISBN { get; set; }
-        public string Materia { get; set; }
         public int NumeroEjemplar { get; set; }
         public bool Estatus { get; set; }
 
@@ -95,12 +94,11 @@ namespace Biblioteca.Models.ModelosDTO
     {
         public int ID { get; set; }
         public string ISBN { get; set; }
-        public string Materia { get; set; }
         public int NumeroEjemplar { get; set; }
         public string Clasificacion { get; set; }
         public bool Estatus { get; set; }
         public string Autor { get; set; }
-        public int? NumeroAdquisicion { get; set; }
+        public int NumeroAdquisicion { get; set; }
         public string CategoriaNombre { get; set; }
         public int? PrestamoActivoId { get; set; }
     }
