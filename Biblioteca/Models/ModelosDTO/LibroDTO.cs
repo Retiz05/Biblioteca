@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace Biblioteca.Models.ModelosDTO
@@ -45,6 +43,7 @@ namespace Biblioteca.Models.ModelosDTO
 
         [JsonProperty("author_name")]
         public List<string> NombresAutor { get; set; }
+
         [JsonProperty("contributors")]
         public List<ContributorDTO> Contributors { get; set; }
 
@@ -52,20 +51,20 @@ namespace Biblioteca.Models.ModelosDTO
         public List<string> Editorial { get; set; }
 
         [JsonProperty("first_publish_year")]
-        public int? AnioPrimeraPublicacion { get; set; } // nullable para evitar errores
+        public int? AnioPrimeraPublicacion { get; set; }
+
         [JsonProperty("publish_date")]
-        public string PublishDate { get; set; } // string porque puede venir como "2005" o "Marzo 2005"
+        public string PublishDate { get; set; }
 
         [JsonProperty("number_of_pages_median")]
-        public int? NumeroPaginas { get; set; } // nullable
+        public int? NumeroPaginas { get; set; }
 
         [JsonProperty("edition_count")]
-        public int? NumeroEdiciones { get; set; } // nullable
+        public int? NumeroEdiciones { get; set; }
 
         [JsonProperty("cover_i")]
         public int? CoverId { get; set; }
 
-        // Ahora es una propiedad normal con get y set
         public string Imagen { get; set; }
     }
 
@@ -75,19 +74,27 @@ namespace Biblioteca.Models.ModelosDTO
         public string Name { get; set; }
     }
 
+    public class LibroDTO
+    {
+        public string Clave { get; set; } // ISBN u otra clave única
+        public string Titulo { get; set; }
+        public string Imagen { get; set; }
+        public int Categoria { get; set; } // ID de la categoría
+        public bool Estatus { get; set; }
+        public string Autor { get; set; } // Agregado para compatibilidad con vistas
+        public int NumeroEjemplar { get; set; } // Agregado para compatibilidad con LibroEstadoDTO
 
+        public static implicit operator string(LibroDTO v)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
-    // Nota: LibroDTO no se usa actualmente, puedes eliminarlo o ajustarlo si lo necesitas
     public class LibroEstadoDTO
     {
         public string ISBN { get; set; }
         public int NumeroEjemplar { get; set; }
         public bool Estatus { get; set; }
-
-        public static implicit operator string(LibroEstadoDTO v)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public class BibliotecaLibroViewModel
@@ -102,6 +109,7 @@ namespace Biblioteca.Models.ModelosDTO
         public string CategoriaNombre { get; set; }
         public int? PrestamoActivoId { get; set; }
     }
+
     public class ClienteDashboardViewModel
     {
         public int TotalLibros { get; set; }

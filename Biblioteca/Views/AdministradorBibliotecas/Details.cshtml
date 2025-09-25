@@ -1,0 +1,819 @@
+﻿@model Biblioteca.Models.Biblioteca
+
+@{
+    ViewBag.Title = "Detalles de Biblioteca";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Detalles de Biblioteca</h1>
+            <p class="dashboard-subtitle">Información detallada de la biblioteca y sus usuarios</p>
+        </div>
+        <div class="dashboard-actions">
+            <a href="@Url.Action("Index", "AdministradorBibliotecas")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a Bibliotecas
+            </a>
+        </div>
+    </header>
+
+    <div class="content-card">
+        <div class="biblioteca-info-header">
+            <div class="biblioteca-icon">
+                <i class="fas fa-book-reader"></i>
+            </div>
+            <div class="biblioteca-details">
+                <h2>@Model.Nombre</h2>
+                <div class="biblioteca-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">@ViewBag.CantidadUsuarios</span>
+                        <span class="stat-label">Usuarios totales</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">@ViewBag.Administradores.Count</span>
+                        <span class="stat-label">Administradores</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider">
+            <h3><i class="fas fa-user-shield"></i> Administradores de la Biblioteca</h3>
+        </div>
+
+        <div class="admin-list">
+            @if (ViewBag.Administradores != null && ViewBag.Administradores.Count > 0)
+            {
+                foreach (var admin in ViewBag.Administradores)
+                {
+                    <div class="admin-item">
+                        <div class="admin-avatar">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="admin-info">
+                            <h4>@admin.Nombre</h4>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state-small">
+                    <i class="fas fa-user-slash"></i>
+                    <p>No hay administradores asignados</p>
+                </div>
+            }
+        </div>
+
+        <div class="section-divider">
+            <h3><i class="fas fa-users"></i> Usuarios de la Biblioteca</h3>
+        </div>
+
+        <div class="search-container">
+            <form method="get" action="@Url.Action("Details", "AdministradorBibliotecas")" role="search" class="search-form">
+                <input type="hidden" name="id" value="@Model.ID" />
+                <div class="search-input-group">
+                    <input type="text" name="busqueda" placeholder="Buscar usuarios por nombre..." value="@ViewBag.Busqueda" aria-label="Buscar usuario">
+                    <button type="submit" class="btn btn-search" aria-label="Buscar">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        @if (ViewBag.usuarios != null && ViewBag.usuarios.Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Biblioteca</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var usuario in ViewBag.usuarios)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <div class="user-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="user-details">
+                                            <h4>@usuario.Nombre</h4>
+                                            <p>@usuario.Correo</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="role-badge">
+                                        @(usuario.RolUsuario != null ? usuario.RolUsuario.Nombre : "Sin rol")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="biblioteca-name">@usuario.Biblioteca.Nombre</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-action" onclick="openEditUsuarioModal({
+                                            ID: @usuario.ID,
+                                            Nombre: '@usuario.Nombre',
+                                            Correo: '@usuario.Correo',
+                                            RolID: '@usuario.RolID',
+                                            BibliotecaID: '@usuario.BibliotecaID'
+                                        })" title="Editar usuario">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <form method="post" action="@Url.Action("Delete", "AdministradorUsuarios", new { id = usuario.ID })"
+                                              onsubmit="return confirm('¿Está seguro de que desea eliminar este usuario?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-action btn-delete" title="Eliminar usuario">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <div class="table-info">
+                    Mostrando @ViewBag.usuarios.Count usuario(s)
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+                <h3>No se encontraron usuarios</h3>
+                <p>No hay usuarios registrados en esta biblioteca</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal para Editar Usuario -->
+<div class="modal-overlay" id="EditarUsuario">
+    <div class="modal-form">
+        <button class="close-btn" onclick="closeForm('EditarUsuario')">✖</button>
+        <h2>Editar Usuario</h2>
+        <form method="post" action="/AdministradorUsuarios/Edit">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="editId" name="ID" />
+            <input type="hidden" name="redirectTo" value="BibliotecaDetails" />
+            <div class="form-group">
+                <label for="editNombre">Nombre del Usuario *</label>
+                <input type="text" id="editNombre" name="Nombre" required />
+            </div>
+            <div class="form-group">
+                <label for="editEmail">Correo Electrónico *</label>
+                <input type="email" id="editEmail" name="Correo" required />
+            </div>
+            <div class="form-group">
+                <label for="editBibliotecaID">Biblioteca Asignada *</label>
+                <select id="editBibliotecaID" name="BibliotecaID" required>
+                    <option value="">-- Seleccione una biblioteca --</option>
+                    @foreach (var biblioteca in ViewBag.Bibliotecas)
+                    {
+                        <option value="@biblioteca.ID">@biblioteca.Nombre</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editRol">Rol del Usuario *</label>
+                <select id="editRol" name="RolID" required>
+                    @foreach (var rol in ViewBag.Roles)
+                    {
+                        <option value="@rol.ID">@rol.Nombre</option>
+                    }
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeForm('EditarUsuario')">Cancelar</button>
+                <button type="submit" class="btn btn-success">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary: #4e73df;
+        --success: #1cc88a;
+        --info: #36b9cc;
+        --warning: #f6c23e;
+        --danger: #e74a3b;
+        --secondary: #858796;
+        --light: #f8f9fc;
+        --dark: #5a5c69;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background-color: #f5f7fb;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        gap: 15px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-title {
+        font-size: 2rem;
+        margin: 0;
+        font-weight: 700;
+        color: #2f3e4d;
+    }
+
+    .dashboard-subtitle {
+        color: #6c757d;
+        margin-top: 6px;
+        font-size: 1rem;
+    }
+
+    .content-card {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .biblioteca-info-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #e3e6f0;
+        margin-bottom: 25px;
+    }
+
+    .biblioteca-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+    }
+
+    .biblioteca-details h2 {
+        margin: 0 0 15px 0;
+        color: #2f3e4d;
+        font-size: 1.8rem;
+    }
+
+    .biblioteca-stats {
+        display: flex;
+        gap: 30px;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .section-divider {
+        margin: 30px 0 20px 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e3e6f0;
+    }
+
+        .section-divider h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2f3e4d;
+            font-size: 1.3rem;
+        }
+
+    .admin-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .admin-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: #f8f9fc;
+        border-radius: 8px;
+        border-left: 4px solid var(--info);
+    }
+
+    .admin-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--info);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .admin-info h4 {
+        margin: 0 0 5px 0;
+        color: #2f3e4d;
+    }
+
+    .admin-info p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .empty-state-small {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px;
+        background: #f8f9fc;
+        border-radius: 8px;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .search-form {
+        margin-bottom: 25px;
+    }
+
+    .search-input-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+        .search-input-group input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+            .search-input-group input:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
+            }
+
+    .btn-search {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.3s;
+        white-space: nowrap;
+    }
+
+        .btn-search:hover {
+            background-color: #2e59d9;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+        margin-bottom: 20px;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .data-table th {
+            background-color: #f8f9fc;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2f3e4d;
+            border-bottom: 2px solid #e3e6f0;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .data-table tr:hover {
+            background-color: #f8f9fc;
+        }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e3e6f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+    }
+
+    .user-details h4 {
+        margin: 0 0 5px 0;
+        color: #2f3e4d;
+    }
+
+    .user-details p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    .role-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background-color: rgba(78, 115, 223, 0.1);
+        color: var(--primary);
+    }
+
+    .biblioteca-name {
+        font-weight: 500;
+        color: #2f3e4d;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 8px 12px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+        .btn-action:not(.btn-delete) {
+            background-color: rgba(54, 185, 204, 0.1);
+            color: var(--info);
+            border-color: rgba(54, 185, 204, 0.3);
+        }
+
+            .btn-action:not(.btn-delete):hover {
+                background-color: var(--info);
+                color: white;
+            }
+
+    .btn-delete {
+        background-color: rgba(231, 74, 59, 0.1);
+        color: var(--danger);
+        border-color: rgba(231, 74, 59, 0.3);
+        border: 1px solid transparent;
+    }
+
+        .btn-delete:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-top: 1px solid #e3e6f0;
+    }
+
+    .table-info {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        border: 2px dashed #e3e6f0;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #d1d3e2;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 10px 0;
+        color: #2f3e4d;
+        font-size: 1.5rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 25px;
+    }
+
+    .btn {
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 12px 24px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.3s ease;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #2e59d9;
+        }
+
+    .btn-success {
+        background-color: var(--success);
+        color: white;
+    }
+
+        .btn-success:hover {
+            background-color: #17a673;
+        }
+
+    .btn-secondary {
+        background-color: var(--secondary);
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background-color: #6b7280;
+        }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+    .modal-form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        position: relative;
+        animation: fadeIn 0.3s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+        .modal-form h2 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: #2f3e4d;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #333;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+    }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
+        }
+
+    .form-actions {
+        display: flex;
+        justify-content: end;
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #e3e6f0;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        background: transparent;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.2s;
+    }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.96);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .dashboard-title {
+            font-size: 1.8rem;
+        }
+
+        .biblioteca-info-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .biblioteca-stats {
+            justify-content: center;
+        }
+
+        .search-input-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+            .search-input-group input {
+                min-width: 100%;
+            }
+
+        .btn-search {
+            justify-content: center;
+        }
+
+        .admin-list {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-action {
+            justify-content: center;
+        }
+
+        .data-table {
+            min-width: 600px;
+        }
+
+        .table-footer {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<script>
+    // Funciones para abrir y cerrar modales
+    function openEditUsuarioModal(usuario) {
+        document.getElementById('editId').value = usuario.ID;
+        document.getElementById('editNombre').value = usuario.Nombre;
+        document.getElementById('editEmail').value = usuario.Correo;
+        document.getElementById('editRol').value = usuario.RolID;
+        document.getElementById('editBibliotecaID').value = usuario.BibliotecaID;
+
+        document.getElementById('EditarUsuario').style.display = 'flex';
+    }
+
+    function closeForm(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    });
+
+    // Cerrar con tecla ESC
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+    });
+</script>

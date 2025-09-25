@@ -1,0 +1,189 @@
+﻿@model List<Biblioteca.Models.Biblioteca>
+
+@{
+    ViewBag.Title = "Gestión de Bibliotecas";
+    Layout = "~/Views/Shared/_LayoutAdministrador.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="~/Content/Administrador/Biblioteca/Index.css" />
+
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Gestión de Bibliotecas</h1>
+            <p class="dashboard-subtitle">Administra las bibliotecas registradas en el sistema</p>
+        </div>
+        <div class="dashboard-actions">
+            <button class="btn btn-primary" onclick="toggleModal('bibliotecaModal')">
+                <i class="fas fa-plus"></i> Nueva Biblioteca
+            </button>
+        </div>
+    </header>
+
+    <div class="content-card">
+        <div class="search-container">
+            <form method="get" action="/AdministradorBibliotecas/Index" role="search" class="search-form">
+                <div class="search-input-group">
+                    <input type="text" name="busqueda" placeholder="Buscar bibliotecas por nombre..." value="@Request.QueryString["search"]" aria-label="Buscar bibliotecas">
+                    <button type="submit" class="btn btn-search" aria-label="Buscar">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuarios</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var biblioteca in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="biblioteca-info">
+                                        <i class="fas fa-book-reader"></i>
+                                        <span>@biblioteca.Nombre</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="user-count">
+                                        @(ViewBag.UsuariosPorBiblioteca.ContainsKey(biblioteca.ID)
+                                            ? ViewBag.UsuariosPorBiblioteca[biblioteca.ID]
+                                            : 0)
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge @(biblioteca.Estatus ? "active" : "inactive")">
+                                        @(biblioteca.Estatus ? "Activa" : "Inactiva")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn-action" onclick="openEditModal('@biblioteca.ID', '@biblioteca.Nombre')" title="Editar biblioteca">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <form method="post" action="@Url.Action("Delete", "AdministradorBibliotecas", new { id = biblioteca.ID })"
+                                              onsubmit="return confirm('¿Está seguro de que desea eliminar esta biblioteca?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-action btn-delete" title="Eliminar biblioteca">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                        <a href="@Url.Action("Details", "AdministradorBibliotecas", new { id = biblioteca.ID })" class="btn-action btn-view" title="Ver detalles">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <div class="table-info">
+                    Mostrando @Model.Count biblioteca(s)
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3>No se encontraron bibliotecas</h3>
+                <p>No hay bibliotecas registradas en el sistema actualmente</p>
+                <button class="btn btn-primary" onclick="toggleModal('bibliotecaModal')">
+                    <i class="fas fa-plus"></i> Crear primera biblioteca
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal para Nueva Biblioteca -->
+<div class="modal-overlay" id="bibliotecaModal">
+    <div class="modal-form">
+        <button class="close-btn" onclick="toggleModal('bibliotecaModal')">✖</button>
+        <h2>Crear Nueva Biblioteca</h2>
+        <form method="post" action="/AdministradorBibliotecas/Create">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="Nombre">Nombre de la Biblioteca *</label>
+                <input type="text" id="Nombre" name="Nombre" required placeholder="Ej: Biblioteca Central">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="toggleModal('bibliotecaModal')">Cancelar</button>
+                <button type="submit" class="btn btn-success">Guardar Biblioteca</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para Editar Biblioteca -->
+<div class="modal-overlay" id="EditarBiblioteca">
+    <div class="modal-form">
+        <button class="close-btn" onclick="toggleModal('EditarBiblioteca')">✖</button>
+        <h2>Editar Biblioteca</h2>
+        <form method="post" action="/AdministradorBibliotecas/Edit">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="editId" name="ID" />
+            <div class="form-group">
+                <label for="editNombre">Nombre de la Biblioteca *</label>
+                <input type="text" id="editNombre" name="Nombre" required />
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="toggleModal('EditarBiblioteca')">Cancelar</button>
+                <button type="submit" class="btn btn-success">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<script>
+    // Funciones para abrir y cerrar modales
+    function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal.style.display === "flex") {
+            modal.style.display = "none";
+        } else {
+            modal.style.display = "flex";
+        }
+    }
+
+    function openEditModal(id, nombre) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editNombre').value = nombre;
+        toggleModal('EditarBiblioteca');
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    });
+
+    // Cerrar con tecla ESC
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+    });
+</script>

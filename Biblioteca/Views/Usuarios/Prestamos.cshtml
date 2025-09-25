@@ -1,0 +1,691 @@
+﻿@using Biblioteca.Models;
+@model List<PrestamoLibro>
+@{
+    ViewBag.Title = "Inicio";
+    Layout = "~/Views/Shared/_LayoutUsuario.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Préstamos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .main-content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 2.2rem;
+        }
+
+        /* Barra de búsqueda */
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            padding-right: 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+            .search-box:focus {
+                outline: none;
+                border-color: #3498db;
+                box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+            }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        /* Filtros de estado */
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+            .filter-btn:hover {
+                background-color: #e9ecef;
+                transform: translateY(-2px);
+                text-decoration: none;
+                color: #495057;
+            }
+
+            .filter-btn.active {
+                background-color: #3498db;
+                color: white;
+            }
+
+        /* Controles del carrusel */
+        .carousel-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .carousel-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .carousel-btn:hover {
+                background: #e9ecef;
+                transform: scale(1.05);
+            }
+
+            .carousel-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+        /* Carrusel personalizado */
+        .carousel-container {
+            position: relative;
+            margin: 0 -15px;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.5s ease;
+        }
+
+        /* Tarjetas de préstamos */
+        .loan-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex: 0 0 calc(33.333% - 20px); /* 3 préstamos por fila */
+            min-width: 300px;
+            max-width: 350px;
+            border-left: 5px solid #3498db;
+        }
+
+            .loan-card.activo {
+                border-left-color: #ffc107;
+            }
+
+            .loan-card.culminado {
+                border-left-color: #28a745;
+            }
+
+            .loan-card.con-multa {
+                border-left-color: #dc3545;
+            }
+
+            .loan-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+            }
+
+        .loan-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .loan-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 70%;
+        }
+
+        .loan-status {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-activo {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-culminado {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .loan-body {
+            padding: 15px;
+        }
+
+        .loan-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .loan-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .loan-value {
+            color: #495057;
+            text-align: right;
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .loan-multa {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .loan-footer {
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .loan-type {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .loan-observaciones {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Indicadores del carrusel */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+            gap: 10px;
+        }
+
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dee2e6;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+            .carousel-dot:hover {
+                transform: scale(1.2);
+            }
+
+            .carousel-dot.active {
+                background: #3498db;
+                transform: scale(1.2);
+            }
+
+        /* Resumen de préstamos */
+        .summary-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+
+        .summary-title {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .summary-multa {
+            color: #dc3545;
+        }
+
+        /* Mensaje sin resultados */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            background: white;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+            .no-results i {
+                font-size: 3.5rem;
+                margin-bottom: 15px;
+                display: block;
+                color: #adb5bd;
+            }
+
+        /* Responsive */
+        @@media (max-width: 1200px) {
+            .loan-card {
+                flex: 0 0 calc(50% - 20px); /* 2 préstamos por fila */
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .loan-card {
+                flex: 0 0 calc(100% - 20px); /* 1 préstamo por fila */
+                min-width: 280px;
+                max-width: 100%;
+                margin: 0 auto;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .filter-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .filter-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1 class="page-title">Mis Préstamos</h1>
+
+        <!-- Formulario de búsqueda -->
+        <div class="search-container">
+            @using (Html.BeginForm("Index", "Prestamos", FormMethod.Get))
+            {
+                <input type="text" id="titulo" name="titulo" class="search-box"
+                       placeholder="Buscar por título del libro" value="@ViewBag.TituloBuscado" />
+                <div class="search-icon">
+                    <button type="submit" style="background: none; border: none; cursor: pointer;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            }
+        </div>
+
+        <!-- Filtros de estado -->
+        <div class="filter-buttons">
+            <a href="@Url.Action("Index", new { estado = "activos", titulo = ViewBag.TituloBuscado })"
+               class="filter-btn @(ViewBag.EstadoFiltro == "activos" || ViewBag.EstadoFiltro == null ? "active" : "")">
+                Préstamos Activos
+            </a>
+            <a href="@Url.Action("Index", new { estado = "culminados", titulo = ViewBag.TituloBuscado })"
+               class="filter-btn @(ViewBag.EstadoFiltro == "culminados" ? "active" : "")">
+                Préstamos Culminados
+            </a>
+            <a href="@Url.Action("Index", new { estado = "todos", titulo = ViewBag.TituloBuscado })"
+               class="filter-btn @(ViewBag.EstadoFiltro == "todos" ? "active" : "")">
+                Todos los Préstamos
+            </a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <!-- Controles del carrusel -->
+            <div class="carousel-controls">
+                <button class="carousel-btn prev-btn" aria-label="Anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn next-btn" aria-label="Siguiente">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Carrusel de préstamos -->
+            <div class="carousel-container">
+                <div class="carousel-track" id="prestamos-track">
+                    @foreach (var prestamo in Model)
+                    {
+                        string cardClass = "loan-card";
+                        string statusClass = "";
+                        string statusText = "";
+
+                        if (prestamo.Devuelto)
+                        {
+                            cardClass += " culminado";
+                            statusClass = "status-culminado";
+                            statusText = "Culminado";
+                        }
+                        else
+                        {
+                            cardClass += " activo";
+                            statusClass = "status-activo";
+                            statusText = "Activo";
+                        }
+
+                        if (prestamo.Multa > 0)
+                        {
+                            cardClass += " con-multa";
+                        }
+
+                        <div class="@cardClass">
+                            <div class="loan-header">
+                                <h3 class="loan-title">@(prestamo.BibliotecaLibro?.Libro?.ISBN ?? "N/A")</h3>
+                                <span class="loan-status @statusClass">@statusText</span>
+                            </div>
+
+                            <div class="loan-body">
+                                <div class="loan-detail">
+                                    <span class="loan-label">Fecha de Préstamo:</span>
+                                    <span class="loan-value">@prestamo.FechaPrestamo.ToString("dd/MM/yyyy")</span>
+                                </div>
+
+                                <div class="loan-detail">
+                                    <span class="loan-label">Fecha de Entrega:</span>
+                                    <span class="loan-value">@prestamo.FechaEntrega.ToString("dd/MM/yyyy")</span>
+                                </div>
+
+                                <div class="loan-detail">
+                                    <span class="loan-label">Entrega Real:</span>
+                                    <span class="loan-value">
+                                        @if (prestamo.FechaEntregaReal > prestamo.FechaEntrega)
+                                        {
+                                            @(prestamo.FechaEntregaReal?.ToString("dd/MM/yyyy") ?? "Pendiente")
+                                        }
+                                        else
+                                        {
+                                            <text>Pendiente</text>
+                                        }
+                                    </span>
+                                </div>
+
+                                <div class="loan-detail">
+                                    <span class="loan-label">Multa:</span>
+                                    <span class="loan-value @(prestamo.Multa > 0 ? "loan-multa" : "")">
+                                        @if (prestamo.Multa > 0)
+                                        {
+                                            @prestamo.Multa.ToString("C")
+                                        }
+                                        else
+                                        {
+                                            <text>Sin multa</text>
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="loan-footer">
+                                <span class="loan-type">@(prestamo.TipoPrestamo?.Nombre ?? "N/A")</span>
+                                <span class="loan-observaciones">@(prestamo.Observacion ?? "Sin observaciones")</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Indicadores de paginación -->
+            <div class="carousel-dots" id="prestamos-dots"></div>
+
+            <!-- Resumen de préstamos -->
+            <div class="summary-container">
+                <h3 class="summary-title">Resumen de Préstamos</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-value">@Model.Count</div>
+                        <div class="summary-label">Total de préstamos</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-value">@Model.Count(p => !p.Devuelto)</div>
+                        <div class="summary-label">Préstamos activos</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-value">@Model.Count(p => p.Devuelto)</div>
+                        <div class="summary-label">Préstamos culminados</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-value summary-multa">@Model.Sum(p => p.Multa).ToString("C")</div>
+                        <div class="summary-label">Multa total</div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="no-results">
+                <i class="fas fa-inbox"></i>
+                <h3>No se encontraron préstamos</h3>
+                <p>
+                    @if (!string.IsNullOrEmpty(ViewBag.TituloBuscado as string))
+                    {
+                        <text>No hay préstamos que coincidan con el título "@ViewBag.TituloBuscado".</text>
+                    }
+                    else
+                    {
+                        <text>No tienes préstamos registrados.</text>
+                    }
+                </p>
+            </div>
+        }
+    </div>
+
+    <script>
+        // Inicializar carrusel cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (Model != null && Model.Any())
+            {
+                <text>
+                initPrestamosCarousel(@Model.Count);
+                </text>
+            }
+
+            // Focus en el campo de búsqueda al cargar la página
+            document.getElementById('titulo').focus();
+        });
+
+        // Función para inicializar el carrusel de préstamos
+        function initPrestamosCarousel(totalPrestamos) {
+            const track = document.getElementById('prestamos-track');
+            const dotsContainer = document.getElementById('prestamos-dots');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+
+            // Calcular cuántos préstamos caben en pantalla
+            const calcularSlidesToShow = () => {
+                if (window.innerWidth < 768) return 1;
+                if (window.innerWidth < 1200) return 2;
+                return 3; // 3 préstamos por fila en pantallas grandes
+            };
+
+            let slidesToShow = calcularSlidesToShow();
+            let currentIndex = 0;
+            let maxIndex = Math.max(0, Math.ceil(totalPrestamos / slidesToShow) - 1);
+
+            // Crear dots de paginación
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i <= maxIndex; i++) {
+                const dot = document.createElement('button');
+                dot.classList.add('carousel-dot');
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+                dotsContainer.appendChild(dot);
+            }
+
+            // Función para actualizar el carrusel
+            function updateCarousel() {
+                const cardWidth = track.querySelector('.loan-card').offsetWidth + 20; // width + gap
+                const translateX = -currentIndex * slidesToShow * cardWidth;
+                track.style.transform = `translateX(${translateX}px)`;
+
+                // Actualizar dots
+                document.querySelectorAll('#prestamos-dots .carousel-dot').forEach((dot, index) => {
+                    if (index === currentIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+
+                // Actualizar estado de los botones
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === maxIndex;
+            }
+
+            // Ir a slide específico
+            function goToSlide(index) {
+                currentIndex = Math.max(0, Math.min(index, maxIndex));
+                updateCarousel();
+            }
+
+            // Event listeners para botones
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    goToSlide(currentIndex - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentIndex < maxIndex) {
+                    goToSlide(currentIndex + 1);
+                }
+            });
+
+            // Recalcular en resize
+            window.addEventListener('resize', () => {
+                const newSlidesToShow = calcularSlidesToShow();
+                if (newSlidesToShow !== slidesToShow) {
+                    slidesToShow = newSlidesToShow;
+                    maxIndex = Math.max(0, Math.ceil(totalPrestamos / slidesToShow) - 1);
+
+                    // Recrear dots
+                    dotsContainer.innerHTML = '';
+                    for (let i = 0; i <= maxIndex; i++) {
+                        const dot = document.createElement('button');
+                        dot.classList.add('carousel-dot');
+                        if (i === currentIndex) dot.classList.add('active');
+                        dot.addEventListener('click', () => {
+                            goToSlide(i);
+                        });
+                        dotsContainer.appendChild(dot);
+                    }
+
+                    // Ajustar currentIndex si es necesario
+                    if (currentIndex > maxIndex) {
+                        currentIndex = maxIndex;
+                    }
+
+                    updateCarousel();
+                }
+            });
+
+            // Inicializar
+            updateCarousel();
+        }
+    </script>
+</body>
+</html>

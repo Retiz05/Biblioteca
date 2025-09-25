@@ -116,8 +116,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\Administrador\AdministradorController.cs" />
-    <Compile Include="Controllers\Administrador\BibliotecasController.cs" />
-    <Compile Include="Controllers\Administrador\ClientesController.cs" />
+    <Compile Include="Controllers\Administrador\AdministradorBibliotecasControlle.cs" />
+    <Compile Include="Controllers\Administrador\AdministradorClientesController.cs" />
+    <Compile Include="Controllers\Administrador\AdministradorUsuariosController.cs" />
     <Compile Include="Controllers\Cliente\ClienteController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\Usuario\UsuariosController.cs" />
@@ -167,6 +168,10 @@
     <Compile Include="Migrations\202509242248436_RemoveMateriaFromLibro.cs" />
     <Compile Include="Migrations\202509242248436_RemoveMateriaFromLibro.Designer.cs">
       <DependentUpon>202509242248436_RemoveMateriaFromLibro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509242331472_CambiosModelos.cs" />
+    <Compile Include="Migrations\202509242331472_CambiosModelos.Designer.cs">
+      <DependentUpon>202509242331472_CambiosModelos.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Administrador.cs" />
@@ -273,11 +278,8 @@
     <Content Include="Views\Login\RecuperarContraseña.cshtml" />
     <Content Include="Views\Administrador\Index.cshtml" />
     <Content Include="Views\Administrador\Bibliotecas.cshtml" />
-    <Content Include="Views\Administrador\Clientes.cshtml" />
-    <Content Include="Views\Administrador\Libros.cshtml" />
     <Content Include="Views\Shared\_LayoutAdministrador.cshtml" />
     <Content Include="Views\Shared\_LayoutCliente.cshtml" />
-    <Content Include="Views\Administrador\CrearUsuario.cshtml" />
     <Content Include="Scripts\jquery-3.7.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.1.min.map" />
     <Content Include="Views\Cliente\Index.cshtml" />
@@ -288,6 +290,13 @@
     <Content Include="Views\Cliente\_PrestamoLibroForm.cshtml" />
     <Content Include="Views\Cliente\GestionPrestamos.cshtml" />
     <Content Include="Views\Cliente\EditBook.cshtml" />
+    <Content Include="Views\AdministradorUsuarios\Index.cshtml" />
+    <Content Include="Views\AdministradorBibliotecas\Index.cshtml" />
+    <Content Include="Views\AdministradorBibliotecas\Details.cshtml" />
+    <Content Include="Views\AdministradorClientes\Index.cshtml" />
+    <Content Include="Views\Shared\_LayoutUsuario.cshtml" />
+    <Content Include="Views\Usuarios\Index.cshtml" />
+    <Content Include="Views\Usuarios\Prestamos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -329,6 +338,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509242248436_RemoveMateriaFromLibro.resx">
       <DependentUpon>202509242248436_RemoveMateriaFromLibro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509242331472_CambiosModelos.resx">
+      <DependentUpon>202509242331472_CambiosModelos.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

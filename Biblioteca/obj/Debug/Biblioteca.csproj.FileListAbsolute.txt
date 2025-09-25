@@ -82,3 +82,4 @@ C:\Users\EQUIPO-13\Documents\biblioteca 2\Biblioteca\obj\Debug\Biblioteca.pdb
 C:\Users\EQUIPO-13\Documents\biblioteca 2\Biblioteca\obj\Debug\Biblioteca.Migrations.Cambios.resources
 C:\Users\EQUIPO-13\Documents\biblioteca 2\Biblioteca\obj\Debug\Biblioteca.Migrations.CampoEstatusBibliotecaLibro.resources
 C:\Users\EQUIPO-13\Documents\biblioteca 2\Biblioteca\obj\Debug\Biblioteca.Migrations.RemoveMateriaFromLibro.resources
+C:\Users\EQUIPO-13\Documents\biblioteca 2\Biblioteca\obj\Debug\Biblioteca.Migrations.CambiosModelos.resources

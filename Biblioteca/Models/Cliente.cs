@@ -14,6 +14,7 @@ namespace Biblioteca.Models
         public string Correo { get; set; }
         public string Contrasena { get; set; }
         public int RolID { get; set; }
+        public bool Estatus { get; set; } = true;
         public int BibliotecaID { get; set; }
         [ForeignKey("RolID")]
         public virtual RolCliente RolClientes { get; set; }

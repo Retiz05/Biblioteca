@@ -1,7 +1,126 @@
-﻿
+﻿@model Biblioteca.Models.ModelosDTO.LoginDTO
+
 @{
-    ViewBag.Title = "RecuperarContraseña";
+    ViewBag.Title = "Recuperar Contraseña";
+    Layout = null;
 }
 
-<h2>RecuperarContraseña</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="~/Content/Login/Index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-key login-icon"></i>
+                <h1 class="login-title">Recuperar Contraseña</h1>
+                <p class="login-subtitle">Restablece tu acceso al sistema</p>
+            </div>
 
+            <div class="login-body">
+                @if (!String.IsNullOrEmpty(ViewBag.SuccessMessage as string))
+                {
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle alert-icon"></i>
+                        @ViewBag.SuccessMessage
+                    </div>
+                }
+
+                @if (!String.IsNullOrEmpty(ViewBag.ErrorMessage as string))
+                {
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle alert-icon"></i>
+                        @ViewBag.ErrorMessage
+                    </div>
+                }
+
+                <form method="post" action="/Login/RecuperarPassword" id="recoveryForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group">
+                        <label for="Correo" class="form-label">
+                            <i class="fas fa-envelope"></i> Correo Electrónico
+                        </label>
+                        <div class="input-group">
+                            <input id="Correo" name="Correo" asp-for="Correo" class="form-control"
+                                   type="email" placeholder="correo@ejemplo.com" required
+                                   autocomplete="email" autofocus />
+                        </div>
+                        <span asp-validation-for="Correo" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="recoveryButton">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Enviar Enlace de Recuperación</span>
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    <div class="recovery-links">
+                        <a href="/Login/Index" class="recovery-link">
+                            <i class="fas fa-arrow-left"></i> Volver al Login
+                        </a>
+                        <a href="/Login/Registro" class="recovery-link">
+                            <i class="fas fa-user-plus"></i> Crear Cuenta
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="system-info">
+            <div class="system-name">Sistema Bibliotecario</div>
+            <div class="system-version">v2.0</div>
+        </div>
+    </div>
+
+    <script>
+        // Validación del formulario
+        const recoveryForm = document.getElementById('recoveryForm');
+        const recoveryButton = document.getElementById('recoveryButton');
+
+        recoveryForm.addEventListener('submit', function (e) {
+            const emailInput = document.getElementById('Correo');
+
+            if (!emailInput.value || !emailInput.validity.valid) {
+                e.preventDefault();
+                emailInput.classList.add('shake');
+
+                setTimeout(() => {
+                    emailInput.classList.remove('shake');
+                }, 300);
+            } else {
+                // Mostrar estado de carga
+                recoveryButton.classList.add('loading');
+                recoveryButton.disabled = true;
+                recoveryButton.querySelector('span').textContent = 'Enviando...';
+            }
+        });
+
+        // Remover clases de error al escribir
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('shake');
+            });
+        });
+
+        // Efecto de focus mejorado
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.style.transform = 'scale(1.02)';
+            });
+
+            input.addEventListener('blur', () => {
+                input.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

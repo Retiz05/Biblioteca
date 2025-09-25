@@ -1,0 +1,740 @@
+﻿@using Biblioteca.Models.ModelosDTO;
+@model List<LibroDTO>
+
+@{
+    ViewBag.Title = "Inicio";
+    Layout = "~/Views/Shared/_LayoutUsuario.cshtml";
+
+    // Catálogo de categorías fijas
+    var categoriasFijas = new Dictionary<int, string>
+{
+        {1, "Generalidades"},
+        {2, "Filosofía y psicología"},
+        {3, "Religión"},
+        {4, "Ciencias sociales"},
+        {5, "Lenguas"},
+        {6, "Matemáticas y ciencias naturales"},
+        {7, "Tecnología y ciencias aplicadas"},
+        {8, "Artes"},
+        {9, "Literatura"},
+        {10, "Historia y geografía"}
+    };
+
+    // Agrupar libros por categoría
+    var librosPorCategoria = new Dictionary<int, List<LibroDTO>>();
+    foreach (var cat in categoriasFijas)
+    {
+        librosPorCategoria[cat.Key] = Model?
+            .Where(l => l.Categoria == cat.Key)
+            .ToList() ?? new List<LibroDTO>();
+    }
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Libros</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos generales */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .main-content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 2.2rem;
+        }
+
+        /* Barra de búsqueda */
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            padding-right: 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+            .search-box:focus {
+                outline: none;
+                border-color: #3498db;
+                box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+            }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .topics-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .topic-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+            .topic-button:hover {
+                background-color: #e9ecef;
+                transform: translateY(-2px);
+            }
+
+            .topic-button.active {
+                background-color: #3498db;
+                color: white;
+            }
+
+        .books-section {
+            margin-bottom: 40px;
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2c3e50;
+        }
+
+        .theme-icon {
+            color: #3498db;
+            font-size: 1.5rem;
+        }
+
+        .books-count {
+            font-size: 0.9rem;
+            color: #6c757d;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+
+        /* Controles del carrusel */
+        .carousel-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .carousel-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .carousel-btn:hover {
+                background: #e9ecef;
+                transform: scale(1.05);
+            }
+
+            .carousel-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+        /* Carrusel personalizado */
+        .carousel-container {
+            position: relative;
+            margin: 0 -15px;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.5s ease;
+        }
+
+        /* Tarjetas de libros más grandes */
+        .book-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            flex: 0 0 calc(25% - 20px); /* 4 libros por fila en pantallas grandes */
+            min-width: 240px; /* Ancho mínimo aumentado */
+            max-width: 260px; /* Ancho máximo aumentado */
+        }
+
+            .book-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+            }
+
+        .book-cover {
+            height: 200px; /* Altura aumentada */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            overflow: hidden;
+            border-bottom: 1px solid #eee;
+        }
+
+        .book-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ajuste para que la imagen se vea completa */
+            padding: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .book-card:hover .book-image {
+            transform: scale(1.05);
+        }
+
+        .book-info {
+            padding: 18px;
+        }
+
+        .book-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.05rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 2.8em; /* Altura ajustada para dos líneas */
+        }
+
+        .book-clave, .book-category {
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .book-status {
+            margin-top: 12px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-available {
+            color: #28a745;
+        }
+
+        .status-unavailable {
+            color: #dc3545;
+        }
+
+        .no-books-message {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+            .no-books-message i {
+                font-size: 3.5rem;
+                margin-bottom: 15px;
+                display: block;
+                color: #adb5bd;
+            }
+
+        /* Indicadores del carrusel */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+            gap: 10px;
+        }
+
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dee2e6;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+            .carousel-dot:hover {
+                transform: scale(1.2);
+            }
+
+            .carousel-dot.active {
+                background: #3498db;
+                transform: scale(1.2);
+            }
+
+        /* Responsive */
+        @@media (max-width: 1200px) {
+            .book-card {
+                flex: 0 0 calc(33.333% - 20px); /* 3 libros por fila */
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .book-card {
+                flex: 0 0 calc(50% - 20px); /* 2 libros por fila */
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .book-card {
+                flex: 0 0 calc(100% - 20px); /* 1 libro por fila */
+                min-width: 280px;
+                max-width: 320px;
+                margin: 0 auto;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .carousel-controls {
+                align-self: flex-end;
+            }
+
+            .book-cover {
+                height: 220px;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .topics-filter {
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding-bottom: 10px;
+                max-width: 100%;
+            }
+
+            .book-card {
+                min-width: 260px;
+                max-width: 300px;
+            }
+
+            .book-cover {
+                height: 200px;
+            }
+
+            .book-info {
+                padding: 15px;
+            }
+        }
+
+        /* Efectos para búsqueda */
+        .highlight {
+            background-color: #fff8e1;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .category-hidden {
+            display: none !important;
+        }
+
+        .book-hidden {
+            display: none !important;
+        }
+
+        /* Mejora visual para secciones */
+        .books-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1 class="page-title">Catálogo de Libros por Categoría</h1>
+
+        <!-- Barra de búsqueda general -->
+        <div class="search-container">
+            <input type="text" id="global-search" class="search-box" placeholder="Buscar libros por título, clave o categoría...">
+            <div class="search-icon">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+
+        <!-- Botones de filtro -->
+        <div class="topics-filter">
+            <button class="topic-button active" data-tema="todos">Todos</button>
+            @foreach (var cat in categoriasFijas)
+            {
+                <button class="topic-button" data-tema="@cat.Value">@cat.Value</button>
+            }
+        </div>
+
+        <!-- Secciones por categoría -->
+        @foreach (var cat in categoriasFijas)
+        {
+            var categoria = cat.Value;
+            var librosDeCategoria = librosPorCategoria[cat.Key];
+            var categoriaId = "categoria-" + cat.Key;
+
+            <div class="books-section" data-tema="@categoria" id="@categoriaId">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-book theme-icon"></i>
+                        <span class="category-name">@categoria</span>
+                        <span class="books-count">@librosDeCategoria.Count libro(s)</span>
+                    </h2>
+
+                    @if (librosDeCategoria.Any())
+                    {
+                        <div class="carousel-controls">
+                            <button class="carousel-btn prev-btn" data-categoria="@cat.Key" aria-label="Anterior">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="carousel-btn next-btn" data-categoria="@cat.Key" aria-label="Siguiente">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                @if (librosDeCategoria.Any())
+                {
+                    <div class="carousel-container">
+                        <div class="carousel-track" id="track-@cat.Key">
+                            @foreach (var libro in librosDeCategoria)
+                            {
+                                <div class="book-card" data-titulo="@libro.Titulo.ToLower()" data-clave="@libro.Clave.ToLower()">
+                                    <div class="book-cover">
+                                        @if (!string.IsNullOrEmpty(libro.Imagen))
+                                        {
+                                            <img src="@libro.Imagen" alt="@libro.Titulo" class="book-image" />
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-book" style="font-size: 3rem; color: #adb5bd;"></i>
+                                        }
+                                    </div>
+                                    <div class="book-info">
+                                        <h3 class="book-title">@libro.Titulo</h3>
+                                        <p class="book-clave">Clave: @libro.Clave</p>
+                                        <p class="book-status">
+                                            @if (libro.Estatus)
+                                            {
+                                                <i class="fas fa-check-circle status-available"> Disponible</i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-times-circle status-unavailable"> No disponible</i>
+                                            }
+                                        </p>
+                                        <p class="book-category">Categoría: @categoria</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Indicadores de paginación -->
+                    <div class="carousel-dots" id="dots-@cat.Key"></div>
+                }
+                else
+                {
+                    <div class="no-books-message">
+                        <i class="fas fa-book-open"></i>
+                        <p>No hay libros disponibles en esta categoría</p>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <script>
+        // Inicializar carruseles cuando el documento esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar todos los carruseles
+            @foreach (var cat in categoriasFijas)
+            {
+                var librosDeCategoria = librosPorCategoria[cat.Key];
+                if (librosDeCategoria.Any())
+                {
+                    <text>
+                    initCarousel(@cat.Key, @librosDeCategoria.Count);
+                    </text>
+                }
+            }
+
+            // Filtrado por categorías
+            document.querySelectorAll('.topic-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.topic-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    button.classList.add('active');
+
+                    const tema = button.getAttribute('data-tema');
+
+                    if (tema === 'todos') {
+                        document.querySelectorAll('.books-section').forEach(section => {
+                            section.classList.remove('category-hidden');
+                        });
+                    } else {
+                        document.querySelectorAll('.books-section').forEach(section => {
+                            section.classList.add('category-hidden');
+                        });
+                        const seccionTema = document.querySelector(`.books-section[data-tema="${tema}"]`);
+                        if (seccionTema) seccionTema.classList.remove('category-hidden');
+
+                        // Scroll suave a la categoría seleccionada
+                        setTimeout(() => {
+                            seccionTema.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    }
+                });
+            });
+
+            // Búsqueda global
+            const globalSearch = document.getElementById('global-search');
+            globalSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                if (searchTerm === '') {
+                    // Mostrar todos los libros y categorías
+                    document.querySelectorAll('.book-card, .books-section').forEach(el => {
+                        el.classList.remove('book-hidden', 'category-hidden');
+                    });
+
+                    // Restaurar texto original
+                    document.querySelectorAll('.book-title, .category-name').forEach(el => {
+                        el.innerHTML = el.textContent;
+                    });
+
+                    return;
+                }
+
+                // Buscar en categorías
+                let categoriasConResultados = new Set();
+
+                document.querySelectorAll('.books-section').forEach(section => {
+                    const categoryName = section.getAttribute('data-tema').toLowerCase();
+                    if (categoryName.includes(searchTerm)) {
+                        section.classList.remove('category-hidden');
+                        categoriasConResultados.add(section.id);
+
+                        // Resaltar coincidencia en el nombre de la categoría
+                        const categoryElement = section.querySelector('.category-name');
+                        const originalText = categoryElement.textContent;
+                        const highlightedText = originalText.replace(new RegExp(searchTerm, 'gi'),
+                            match => `<span class="highlight">${match}</span>`);
+                        categoryElement.innerHTML = highlightedText;
+                    } else {
+                        section.classList.add('category-hidden');
+                    }
+                });
+
+                // Buscar en libros
+                document.querySelectorAll('.book-card').forEach(card => {
+                    const title = card.getAttribute('data-titulo');
+                    const clave = card.getAttribute('data-clave');
+                    const titleElement = card.querySelector('.book-title');
+                    const originalTitle = titleElement.textContent;
+
+                    if (title.includes(searchTerm) || clave.includes(searchTerm)) {
+                        card.classList.remove('book-hidden');
+
+                        // Resaltar coincidencia en el título
+                        const highlightedTitle = originalTitle.replace(new RegExp(searchTerm, 'gi'),
+                            match => `<span class="highlight">${match}</span>`);
+                        titleElement.innerHTML = highlightedTitle;
+
+                        // Mostrar la categoría de este libro
+                        const section = card.closest('.books-section');
+                        if (section) {
+                            section.classList.remove('category-hidden');
+                            categoriasConResultados.add(section.id);
+                        }
+                    } else {
+                        card.classList.add('book-hidden');
+                        // Restaurar título original
+                        titleElement.innerHTML = originalTitle;
+                    }
+                });
+
+                // Ocultar categorías sin resultados
+                document.querySelectorAll('.books-section').forEach(section => {
+                    if (!categoriasConResultados.has(section.id)) {
+                        section.classList.add('category-hidden');
+                    }
+                });
+            });
+        });
+
+        // Función para inicializar el carrusel personalizado
+        function initCarousel(categoriaId, totalLibros) {
+            const track = document.getElementById(`track-${categoriaId}`);
+            const dotsContainer = document.getElementById(`dots-${categoriaId}`);
+            const prevBtn = document.querySelector(`.prev-btn[data-categoria="${categoriaId}"]`);
+            const nextBtn = document.querySelector(`.next-btn[data-categoria="${categoriaId}"]`);
+
+            // Calcular cuántos libros caben en pantalla
+            const calcularSlidesToShow = () => {
+                if (window.innerWidth < 576) return 1;
+                if (window.innerWidth < 768) return 1;
+                if (window.innerWidth < 992) return 2;
+                if (window.innerWidth < 1200) return 3;
+                return 4; // 4 libros por fila en pantallas grandes
+            };
+
+            let slidesToShow = calcularSlidesToShow();
+            let currentIndex = 0;
+            let maxIndex = Math.max(0, Math.ceil(totalLibros / slidesToShow) - 1);
+
+            // Crear dots de paginación
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i <= maxIndex; i++) {
+                const dot = document.createElement('button');
+                dot.classList.add('carousel-dot');
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+                dotsContainer.appendChild(dot);
+            }
+
+            // Función para actualizar el carrusel
+            function updateCarousel() {
+                const cardWidth = track.querySelector('.book-card').offsetWidth + 20; // width + gap
+                const translateX = -currentIndex * slidesToShow * cardWidth;
+                track.style.transform = `translateX(${translateX}px)`;
+
+                // Actualizar dots
+                document.querySelectorAll(`#dots-${categoriaId} .carousel-dot`).forEach((dot, index) => {
+                    if (index === currentIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+
+                // Actualizar estado de los botones
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === maxIndex;
+            }
+
+            // Ir a slide específico
+            function goToSlide(index) {
+                currentIndex = Math.max(0, Math.min(index, maxIndex));
+                updateCarousel();
+            }
+
+            // Event listeners para botones
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    goToSlide(currentIndex - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentIndex < maxIndex) {
+                    goToSlide(currentIndex + 1);
+                }
+            });
+
+            // Recalcular en resize
+            window.addEventListener('resize', () => {
+                const newSlidesToShow = calcularSlidesToShow();
+                if (newSlidesToShow !== slidesToShow) {
+                    slidesToShow = newSlidesToShow;
+                    maxIndex = Math.max(0, Math.ceil(totalLibros / slidesToShow) - 1);
+
+                    // Recrear dots
+                    dotsContainer.innerHTML = '';
+                    for (let i = 0; i <= maxIndex; i++) {
+                        const dot = document.createElement('button');
+                        dot.classList.add('carousel-dot');
+                        if (i === currentIndex) dot.classList.add('active');
+                        dot.addEventListener('click', () => {
+                            goToSlide(i);
+                        });
+                        dotsContainer.appendChild(dot);
+                    }
+
+                    // Ajustar currentIndex si es necesario
+                    if (currentIndex > maxIndex) {
+                        currentIndex = maxIndex;
+                    }
+
+                    updateCarousel();
+                }
+            });
+
+            // Inicializar
+            updateCarousel();
+        }
+    </script>
+</body>
+</html>

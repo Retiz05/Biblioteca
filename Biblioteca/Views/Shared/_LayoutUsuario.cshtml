@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Bibliotecario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/Content/Usuario/LayoutUsuario.css" />
+</head>
+<body>
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">
+                <i class="fas fa-book-reader"></i> Sistema Bibliotecario
+            </div>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="/Usuarios"><i class="fas fa-home"></i> Inicio</a>
+            <a href="/Usuarios/Prestamos"><i class="fas fa-book"></i> Préstamos</a>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="/Login/Logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <button id="toggleBtn" aria-label="Toggle Menu">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+    </button>
+
+    <div class="overlay"></div>
+
+    <div id="mainContent" class="main">
+        @RenderBody()
+        @RenderSection("Scripts", required: false);
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('toggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const overlay = document.querySelector('.overlay');
+
+        // Añadir efecto de pulso al botón
+        toggleBtn.classList.add('pulse');
+
+        // Quitar el pulso después de 6 segundos
+        setTimeout(() => {
+            toggleBtn.classList.remove('pulse');
+        }, 6000);
+
+        // Función para cerrar el menú en móviles
+        function closeSidebar() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('show');
+            }
+        }
+
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el clic se propague al documento
+
+            // Para pantallas grandes
+            if (window.innerWidth > 768) {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            } else {
+                // Para pantallas pequeñas
+                sidebar.classList.toggle('show');
+            }
+
+            // Añadir efecto de pulso al interactuar
+            toggleBtn.classList.remove('pulse');
+            void toggleBtn.offsetWidth; // Reiniciar animación
+            toggleBtn.classList.add('pulse');
+
+            // Quitar el pulso después de un tiempo
+            setTimeout(() => {
+                toggleBtn.classList.remove('pulse');
+            }, 2000);
+        });
+
+        // Cerrar menú al hacer clic en el overlay
+        overlay.addEventListener('click', closeSidebar);
+
+        // Cerrar menú al hacer clic fuera en dispositivos móviles
+        document.addEventListener('click', (e) => {
+            // Si el menú está abierto en móvil y se hace clic fuera de él
+            if (window.innerWidth <= 768 &&
+                sidebar.classList.contains('show') &&
+                !sidebar.contains(e.target) &&
+                e.target !== toggleBtn) {
+                closeSidebar();
+            }
+        });
+
+        // Evitar que los clics dentro del menú cierren el menú
+        sidebar.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Opcional: cerrar sidebar si se redimensiona
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('show');
+                overlay.style.display = 'none';
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+            }
+        });
+    </script>
+</body>
+</html>
